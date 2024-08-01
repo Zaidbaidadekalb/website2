@@ -11,7 +11,7 @@ magicMouse(options);
 
 // Global variables
 let token = localStorage.getItem('token');
-const apiUrl = 'https://your-worker-url.workers.dev'; // Replace with your Cloudflare Worker URL
+const apiUrl = 'key-management-worker.zaidbaidaa.workers.dev'; // Replace with your Cloudflare Worker URL
 
 // Helper function to make API requests
 async function apiRequest(endpoint, method = 'GET', body = null) {
