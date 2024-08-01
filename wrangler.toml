@@ -6,6 +6,14 @@ route = ""
 zone_id = ""
 compatibility_date = "2023-05-18"
 
-[site]
-bucket = "./"
+[
+site
+]
+bucket = "./build"
 entry-point = "workers-site"
+
+[
+build
+]
+command = "npm run build"
+upload.format = "service-worker"
