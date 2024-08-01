@@ -1,0 +1,11 @@
+name = "key-management-dashboard"
+type = "webpack"
+account_id = "5d63528b85f73f19656a8b76dfe00eb2"
+workers_dev = true
+route = ""
+zone_id = ""
+compatibility_date = "2023-05-18"
+
+[site]
+bucket = "./"
+entry-point = "workers-site"
