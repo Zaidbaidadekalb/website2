@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './config.js';
 import { showError, clearError } from './error-handling.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,14 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        try {
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+try {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+    });
+
 
             if (response.ok) {
                 const data = await response.json();
