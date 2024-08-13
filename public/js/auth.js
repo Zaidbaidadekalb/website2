@@ -1,31 +1,20 @@
+import { showError, clearError } from './error-handling.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
-    const usernameError = document.getElementById('username-error');
-    const passwordError = document.getElementById('password-error');
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        clearError();
 
-        // Reset error messages
-        usernameError.textContent = '';
-        passwordError.textContent = '';
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
 
-        // Validate inputs
-        let isValid = true;
-
-        if (usernameInput.value.trim() === '') {
-            usernameError.textContent = 'Username is required';
-            isValid = false;
+        if (!validateForm(username, password)) {
+            return;
         }
-
-        if (passwordInput.value.trim() === '') {
-            passwordError.textContent = 'Password is required';
-            isValid = false;
-        }
-
-        if (!isValid) return;
 
         try {
             const response = await fetch('/login', {
@@ -33,10 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    username: usernameInput.value,
-                    password: passwordInput.value,
-                }),
+                body: JSON.stringify({ username, password }),
             });
 
             if (response.ok) {
@@ -44,24 +30,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('token', data.token);
                 window.location.href = '/dashboard.html';
             } else {
-                throw new Error('Login failed');
+                const errorData = await response.json();
+                showError(errorData.message || 'Login failed. Please try again.');
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login failed. Please try again.');
+            showError('An unexpected error occurred. Please try again later.');
         }
     });
 
-    // Add real-time validation
+    function validateForm(username, password) {
+        if (username.length < 3) {
+            showError('Username must be at least 3 characters long.');
+            return false;
+                    }
+        if (password.length < 8) {
+            showError('Password must be at least 8 characters long.');
+            return false;
+        }
+        return true;
+    }
+
     usernameInput.addEventListener('input', () => {
-        if (usernameInput.value.trim() !== '') {
-            usernameError.textContent = '';
+        if (usernameInput.value.trim().length >= 3) {
+            clearError();
         }
     });
 
     passwordInput.addEventListener('input', () => {
-        if (passwordInput.value.trim() !== '') {
-            passwordError.textContent = '';
+        if (passwordInput.value.length >= 8) {
+            clearError();
         }
     });
 });
