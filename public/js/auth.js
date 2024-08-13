@@ -1,5 +1,30 @@
-import { API_BASE_URL } from './config.js';
-import { showError, clearError } from './error-handling.js';
+// auth.js
+
+const API_BASE_URL = 'https://key-management-worker.zaidbaidaa.workers.dev';
+
+function showError(message) {
+    const errorContainer = document.getElementById('error-container');
+    errorContainer.textContent = message;
+    errorContainer.style.display = 'block';
+}
+
+function clearError() {
+    const errorContainer = document.getElementById('error-container');
+    errorContainer.textContent = '';
+    errorContainer.style.display = 'none';
+}
+
+function validateForm(username, password) {
+    if (username.length < 3) {
+        showError('Username must be at least 3 characters long.');
+        return false;
+    }
+    if (password.length < 8) {
+        showError('Password must be at least 8 characters long.');
+        return false;
+    }
+    return true;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
@@ -17,15 +42,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-try {
-    const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-    });
-
+        try {
+            const response = await fetch(`${API_BASE_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
             if (response.ok) {
                 const data = await response.json();
@@ -40,18 +64,6 @@ try {
             showError('An unexpected error occurred. Please try again later.');
         }
     });
-
-    function validateForm(username, password) {
-        if (username.length < 3) {
-            showError('Username must be at least 3 characters long.');
-            return false;
-                    }
-        if (password.length < 8) {
-            showError('Password must be at least 8 characters long.');
-            return false;
-        }
-        return true;
-    }
 
     usernameInput.addEventListener('input', () => {
         if (usernameInput.value.trim().length >= 3) {
