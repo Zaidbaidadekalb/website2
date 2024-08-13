@@ -64,32 +64,160 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function displayRoleSpecificContent(role) {
-        switch (role) {
-            case 'admin':
-                roleSpecificContent.innerHTML = `
-                    <h2>Admin Controls</h2>
-                    <button id="create-user">Create User</button>
-                    <button id="manage-teams">Manage Teams</button>
-                    <div id="admin-charts"></div>
-                `;
-                createAdminCharts();
-                break;
-            case 'team':
-                roleSpecificContent.innerHTML = `
-                    <h2>Team Controls</h2>
-                    <button id="create-key">Create Key</button>
-                `;
-                document.getElementById('create-key').addEventListener('click', createKey);
-                break;
-            case 'user':
-                roleSpecificContent.innerHTML = `
-                    <h2>User Dashboard</h2>
-                    <p>Welcome, ${store.getState().user.username}!</p>
-                `;
-                break;
-        }
+    async function loadAdminDashboard() {
+    try {
+        const [userStats, keyStats, recentActivity] = await Promise.all([
+            fetch('/admin/user-stats', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json()),
+            fetch('/admin/key-stats', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json()),
+            fetch('/admin/recent-activity', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json())
+        ]);
+
+        document.getElementById('user-stats-content').innerHTML = `
+            <p>Total Users: ${userStats.totalUsers}</p>
+            <p>Active Users: ${userStats.activeUsers}</p>
+            <p>New Users (Last 30 days): ${userStats.newUsers}</p>
+        `;
+
+        document.getElementById('key-stats-content').innerHTML = `
+            <p>Total Keys: ${keyStats.totalKeys}</p>
+            <p>Active Keys: ${keyStats.activeKeys}</p>
+            <p>Expired Keys: ${keyStats.expiredKeys}</p>
+        `;
+
+        document.getElementById('recent-activity-content').innerHTML = `
+            <ul>
+                ${recentActivity.map(activity => `<li>${activity.action} by ${activity.user} at ${new Date(activity.timestamp).toLocaleString()}</li>`).join('')}
+            </ul>
+        `;
+
+        document.getElementById('manage-users').addEventListener('click', openUserManagement);
+        document.getElementById('manage-teams').addEventListener('click', openTeamManagement);
+        document.getElementById('generate-report').addEventListener('click', generateReport);
+    } catch (error) {
+        handleError(error);
     }
+}
+
+async function loadTeamDashboard() {
+    try {
+        const [teamKeyStats, teamMembers] = await Promise.all([
+            fetch('/team/key-stats', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json()),
+            fetch('/team/members', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json())
+        ]);
+
+        document.getElementById('team-key-stats-content').innerHTML = `
+            <p>Total Team Keys: ${teamKeyStats.totalKeys}</p>
+            <p>Active Team Keys: ${teamKeyStats.activeKeys}</p>
+            <p>Keys Expiring Soon: ${teamKeyStats.expiringKeys}</p>
+        `;
+
+        document.getElementById('team-members-content').innerHTML = `
+            <ul>
+                ${teamMembers.map(member => `<li>${member.name} (${member.role})</li>`).join('')}
+            </ul>
+        `;
+
+        document.getElementById('create-key').addEventListener('click', createKey);
+        document.getElementById('request-more-keys').addEventListener('click', requestMoreKeys);
+    } catch (error) {
+        handleError(error);
+    }
+}
+
+async function loadUserDashboard() {
+    try {
+        const [userKeyStats, keyUsageHistory] = await Promise.all([
+            fetch('/user/key-stats', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json()),
+            fetch('/user/key-usage-history', { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json())
+        ]);
+
+        document.getElementById('user-key-stats-content').innerHTML = `
+            <p>Your Active Keys: ${userKeyStats.activeKeys}</p>
+            <p>Total Usage: ${userKeyStats.totalUsage}</p>
+            <p>Keys Expiring Soon: ${userKeyStats.expiringKeys}</p>
+        `;
+
+        document.getElementById('key-usage-history-content').innerHTML = `
+            <ul>
+                ${keyUsageHistory.map(usage => `<li>Key: ${usage.key} - Used on: ${new Date(usage.timestamp).toLocaleString()}</li>`).join('')}
+            </ul>
+        `;
+
+        document.getElementById('request-key').addEventListener('click', requestNewKey);
+    } catch (error) {
+        handleError(error);
+    }
+}
+    
+
+function displayRoleSpecificContent(role) {
+    switch (role) {
+        case 'admin':
+            roleSpecificContent.innerHTML = `
+                <h2>Admin Dashboard</h2>
+                <div class="dashboard-widgets">
+                    <div class="widget" id="user-stats">
+                        <h3>User Statistics</h3>
+                        <div id="user-stats-content"></div>
+                    </div>
+                    <div class="widget" id="key-stats">
+                        <h3>Key Statistics</h3>
+                        <div id="key-stats-content"></div>
+                    </div>
+                    <div class="widget" id="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div id="recent-activity-content"></div>
+                    </div>
+                </div>
+                <div class="admin-controls">
+                    <button id="manage-users">Manage Users</button>
+                    <button id="manage-teams">Manage Teams</button>
+                    <button id="generate-report">Generate Report</button>
+                </div>
+            `;
+            loadAdminDashboard();
+            break;
+        case 'team':
+            roleSpecificContent.innerHTML = `
+                <h2>Team Dashboard</h2>
+                <div class="dashboard-widgets">
+                    <div class="widget" id="team-key-stats">
+                        <h3>Team Key Statistics</h3>
+                        <div id="team-key-stats-content"></div>
+                    </div>
+                    <div class="widget" id="team-members">
+                        <h3>Team Members</h3>
+                        <div id="team-members-content"></div>
+                    </div>
+                </div>
+                <div class="team-controls">
+                    <button id="create-key">Create Key</button>
+                    <button id="request-more-keys">Request More Keys</button>
+                </div>
+            `;
+            loadTeamDashboard();
+            break;
+        case 'user':
+            roleSpecificContent.innerHTML = `
+                <h2>User Dashboard</h2>
+                <div class="dashboard-widgets">
+                    <div class="widget" id="user-key-stats">
+                        <h3>Your Key Statistics</h3>
+                        <div id="user-key-stats-content"></div>
+                    </div>
+                    <div class="widget" id="key-usage-history">
+                        <h3>Key Usage History</h3>
+                        <div id="key-usage-history-content"></div>
+                    </div>
+                </div>
+                <div class="user-controls">
+                    <button id="request-key">Request New Key</button>
+                </div>
+            `;
+            loadUserDashboard();
+            break;
+    }
+}
 
     function displayDashboardContent(data) {
         dashboardContent.innerHTML = `
