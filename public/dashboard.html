@@ -4,32 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Key Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
-        <nav>
-            <ul>
-                <li><a href="/dashboard.html" class="active">Dashboard</a></li>
-                <li><a href="/settings.html">Settings</a></li>
-                <li><a href="/account.html">Account</a></li>
-                <li><a href="#" id="logout">Logout</a></li>
-            </ul>
-        </nav>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="/dashboard.html" class="active">Dashboard</a></li>
+                    <li><a href="/settings.html">Settings</a></li>
+                    <li><a href="/account.html">Account</a></li>
+                    <li><a href="#" id="logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main>
-        <h1>Dashboard</h1>
-        <div id="role-specific-content"></div>
-        <div id="dashboard-content"></div>
-        <div id="error-container" class="error-message"></div>
+        <div class="container">
+            <div class="card glass-morphism fade-in">
+                <h1 class="slide-up">Dashboard</h1>
+                <div id="dashboard-content" class="slide-up"></div>
+            </div>
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2023 Key Management System. All rights reserved.</p>
+        <div class="container">
+            <p>&copy; 2023 Key Management System. All rights reserved.</p>
+        </div>
     </footer>
 
-    <script src="/js/dashboard.js"></script>
+    <div id="notification" class="notification"></div>
+
+    <script src="/js/dashboard.js" type="module"></script>
 </body>
 </html>
