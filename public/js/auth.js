@@ -1,17 +1,24 @@
-// auth.js
-
 const API_BASE_URL = 'https://key-management-worker.zaidbaidaa.workers.dev';
+
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification ${type} show`;
+    setTimeout(() => {
+        notification.className = 'notification';
+    }, 3000);
+}
 
 function showError(message) {
     const errorContainer = document.getElementById('error-container');
     errorContainer.textContent = message;
-    errorContainer.style.display = 'block';
+    errorContainer.className = 'error-message show';
 }
 
 function clearError() {
     const errorContainer = document.getElementById('error-container');
     errorContainer.textContent = '';
-    errorContainer.style.display = 'none';
+    errorContainer.className = 'error-message';
 }
 
 function validateForm(username, password) {
@@ -54,7 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
-                window.location.href = '/dashboard.html';
+                showNotification('Login successful. Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard.html';
+                }, 1500);
             } else {
                 const errorData = await response.json();
                 showError(errorData.message || 'Login failed. Please try again.');
@@ -65,15 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    usernameInput.addEventListener('input', () => {
-        if (usernameInput.value.trim().length >= 3) {
-            clearError();
-        }
-    });
-
-    passwordInput.addEventListener('input', () => {
-        if (passwordInput.value.length >= 8) {
-            clearError();
-        }
-    });
+    usernameInput.addEventListener('input', clearError);
+    passwordInput.addEventListener('input', clearError);
 });
