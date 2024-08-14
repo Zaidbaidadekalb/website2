@@ -1,33 +1,14 @@
+import { showNotification } from './notifications.js';
+
 const API_BASE_URL = 'https://key-management-worker.zaidbaidaa.workers.dev';
-
-function showNotification(message, type = 'success') {
-    const notification = document.getElementById('notification');
-    notification.textContent = message;
-    notification.className = `notification ${type} show`;
-    setTimeout(() => {
-        notification.className = 'notification';
-    }, 3000);
-}
-
-function showError(message) {
-    const errorContainer = document.getElementById('error-container');
-    errorContainer.textContent = message;
-    errorContainer.className = 'error-message show';
-}
-
-function clearError() {
-    const errorContainer = document.getElementById('error-container');
-    errorContainer.textContent = '';
-    errorContainer.className = 'error-message';
-}
 
 function validateForm(username, password) {
     if (username.length < 3) {
-        showError('Username must be at least 3 characters long.');
+        showNotification('Username must be at least 3 characters long.', 'error');
         return false;
     }
     if (password.length < 8) {
-        showError('Password must be at least 8 characters long.');
+        showNotification('Password must be at least 8 characters long.', 'error');
         return false;
     }
     return true;
@@ -40,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        clearError();
 
         const username = usernameInput.value.trim();
         const password = passwordInput.value;
@@ -67,14 +47,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 1500);
             } else {
                 const errorData = await response.json();
-                showError(errorData.message || 'Login failed. Please try again.');
+                showNotification(errorData.message || 'Login failed. Please try again.', 'error');
             }
         } catch (error) {
             console.error('Login error:', error);
-            showError('An unexpected error occurred. Please try again later.');
+            showNotification('An unexpected error occurred. Please try again later.', 'error');
         }
     });
-
-    usernameInput.addEventListener('input', clearError);
-    passwordInput.addEventListener('input', clearError);
 });
