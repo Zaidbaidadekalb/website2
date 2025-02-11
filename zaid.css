@@ -1,85 +1,99 @@
-/* Playboi Carti '2024 Music' Vencord Theme */
+/**
+ * @name CartiTheme
+ * @author Assistant
+ * @version 1.0
+ * @description A high-energy, animated Discord theme
+ * @source https://github.com/Vencord/snippets
+ */
 
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
-
+/* Root variables for theme colors */
 :root {
-    --background-color: #000000;
-    --text-color: #ff0000;
-    --hover-color: #660000;
-    --accent-color: #ff1111;
+    --background-primary: #0a0a0a;
+    --background-secondary: #141414;
+    --background-tertiary: #1a1a1a;
+    --text-normal: #ffffff;
+    --text-muted: #ff0000;
+    --header-primary: #ff0000;
+    --interactive-active: #ff0000;
 }
 
-body {
-    background: url('https://example.com/your-glitchy-background.gif') center/cover no-repeat fixed;
-    font-family: 'Rubik Glitch', sans-serif;
+/* Animated background */
+.app-2rEoOp {
+    background: linear-gradient(45deg, #000000, #1a0000);
+    animation: gradientShift 10s ease infinite;
 }
 
-/* Animated text glitch effect */
-@keyframes glitch {
-    0% { text-shadow: 2px 2px 0 var(--accent-color); }
-    50% { text-shadow: -2px -2px 0 var(--hover-color); }
-    100% { text-shadow: 2px 2px 0 var(--accent-color); }
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
-h1, h2, h3, .channel-name {
-    color: var(--text-color);
-    animation: glitch 0.5s infinite alternate;
+/* Message hover effect */
+.message-2qnXI6:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
 }
 
-/* Hover effects for buttons */
-button, .button {
-    background-color: var(--text-color);
-    color: #000;
-    transition: 0.3s;
-}
-button:hover, .button:hover {
-    background-color: var(--hover-color);
-    transform: scale(1.1);
+/* Channel list styling */
+.wrapper-3NnKdC {
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
-/* Sidebar animations */
-.sidebar {
-    background: linear-gradient(45deg, #000, #330000);
-    transition: all 0.3s ease-in-out;
-}
-.sidebar:hover {
-    background: linear-gradient(45deg, #330000, #660000);
+/* Server list animation */
+.listItem-2P_4kh {
+    transition: transform 0.3s ease;
 }
 
-/* Voice channels pulsating effect */
-.voice-channel {
-    animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-    0% { box-shadow: 0 0 5px var(--accent-color); }
-    50% { box-shadow: 0 0 15px var(--hover-color); }
-    100% { box-shadow: 0 0 5px var(--accent-color); }
+.listItem-2P_4kh:hover {
+    transform: translateX(5px);
 }
 
-/* Custom loading screen */
-.loadingScreen {
-    background: url('https://example.com/playboi-carti-loading.gif') center/cover no-repeat;
+/* Animated text glow effect */
+.username-1A8OIy {
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    animation: textGlow 2s ease-in-out infinite;
 }
 
-/* Scrollbar customization */
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    }
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
-    background: #110000;
-}
-::-webkit-scrollbar-thumb {
-    background: var(--accent-color);
-    border-radius: 10px;
 }
 
-/* Animated typing effect */
-.typing {
-    overflow: hidden;
-    white-space: nowrap;
-    border-right: 2px solid var(--accent-color);
-    animation: typing 3s steps(20, end) infinite;
+::-webkit-scrollbar-thumb {
+    background-color: #ff0000;
+    border-radius: 4px;
 }
-@keyframes typing {
-    0% { width: 0; }
-    50% { width: 100%; }
-    100% { width: 0; }
+
+::-webkit-scrollbar-track {
+    background-color: #000000;
+}
+
+/* Message input box styling */
+.channelTextArea-rNsIhG {
+    background-color: rgba(20, 20, 20, 0.8);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+/* Button hover animation */
+.button-1YfofB:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+    background-color: rgba(255, 0, 0, 0.2) !important;
 }
