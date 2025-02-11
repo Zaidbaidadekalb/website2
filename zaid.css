@@ -1,0 +1,85 @@
+/* Playboi Carti '2024 Music' Vencord Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
+
+:root {
+    --background-color: #000000;
+    --text-color: #ff0000;
+    --hover-color: #660000;
+    --accent-color: #ff1111;
+}
+
+body {
+    background: url('https://example.com/your-glitchy-background.gif') center/cover no-repeat fixed;
+    font-family: 'Rubik Glitch', sans-serif;
+}
+
+/* Animated text glitch effect */
+@keyframes glitch {
+    0% { text-shadow: 2px 2px 0 var(--accent-color); }
+    50% { text-shadow: -2px -2px 0 var(--hover-color); }
+    100% { text-shadow: 2px 2px 0 var(--accent-color); }
+}
+
+h1, h2, h3, .channel-name {
+    color: var(--text-color);
+    animation: glitch 0.5s infinite alternate;
+}
+
+/* Hover effects for buttons */
+button, .button {
+    background-color: var(--text-color);
+    color: #000;
+    transition: 0.3s;
+}
+button:hover, .button:hover {
+    background-color: var(--hover-color);
+    transform: scale(1.1);
+}
+
+/* Sidebar animations */
+.sidebar {
+    background: linear-gradient(45deg, #000, #330000);
+    transition: all 0.3s ease-in-out;
+}
+.sidebar:hover {
+    background: linear-gradient(45deg, #330000, #660000);
+}
+
+/* Voice channels pulsating effect */
+.voice-channel {
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { box-shadow: 0 0 5px var(--accent-color); }
+    50% { box-shadow: 0 0 15px var(--hover-color); }
+    100% { box-shadow: 0 0 5px var(--accent-color); }
+}
+
+/* Custom loading screen */
+.loadingScreen {
+    background: url('https://example.com/playboi-carti-loading.gif') center/cover no-repeat;
+}
+
+/* Scrollbar customization */
+::-webkit-scrollbar {
+    width: 8px;
+    background: #110000;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 10px;
+}
+
+/* Animated typing effect */
+.typing {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid var(--accent-color);
+    animation: typing 3s steps(20, end) infinite;
+}
+@keyframes typing {
+    0% { width: 0; }
+    50% { width: 100%; }
+    100% { width: 0; }
+}
