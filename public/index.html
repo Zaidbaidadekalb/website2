@@ -444,7 +444,6 @@
                         spellcheck="false"
                     >
                     <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                 </div>
@@ -613,165 +612,6 @@
             showError('Please contact your administrator to reset your password.');
         });
 
-        // Main login form handler
-        loginForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            hideMessages();
-
-            if (!validateForm()) {
-                return;
-            }
-
-            const username = sanitizeInput(usernameInput.value);
-            const password = passwordInput.value;
-
-            setLoading(true);
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        password: password
-                    })
-                });
-
-                let data;
-                const contentType = response.headers.get('content-type');
-                
-                if (contentType && contentType.includes('application/json')) {
-                    data = await response.json();
-                } else {
-                    // Handle non-JSON responses
-                    const text = await response.text();
-                    console.warn('Non-JSON response received:', text);
-                    data = { error: text || 'Invalid response from server' };
-                }
-
-                if (response.ok && data.token) {
-                    // Store authentication data
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('loginTime', new Date().toISOString());
-                    
-                    showSuccess('Login successful! Redirecting to dashboard...');
-                    
-                    // Add success animation
-                    loginForm.style.transform = 'scale(0.95)';
-                    loginForm.style.opacity = '0.8';
-                    
-                    // Redirect after a short delay
-                    setTimeout(() => {
-                        // Check if dashboard exists, otherwise redirect to a default page
-                        window.location.href = '/dashboard.html';
-                    }, 1500);
-                    
-                } else {
-                    // Handle different error cases
-                    let errorMessage = 'Login failed. Please try again.';
-                    
-                    if (data.error) {
-                        errorMessage = data.error;
-                    } else if (response.status === 401) {
-                        errorMessage = 'Invalid username or password. Please check your credentials and try again.';
-                    } else if (response.status === 429) {
-                        errorMessage = 'Too many login attempts. Please wait a few minutes before trying again.';
-                    } else if (response.status === 503) {
-                        errorMessage = 'Service temporarily unavailable. Please try again later.';
-                    } else if (response.status >= 500) {
-                        errorMessage = 'Server error. Please try again later or contact support.';
-                    }
-                    
-                    showError(errorMessage);
-                    
-                    // Clear password field on error
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                
-                let errorMessage = 'Network error. Please check your connection and try again.';
-                
-                if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    errorMessage = 'Unable to connect to the server. Please check your internet connection.';
-                } else if (error.name === 'SyntaxError') {
-                    errorMessage = 'Server returned an invalid response. Please try again.';
-                }
-                
-                showError(errorMessage);
-                
-                // Clear password field on error
-                passwordInput.value = '';
-                passwordInput.focus();
-            } finally {
-                setLoading(false);
-            }
-        });
-
-        // Check if user is already logged in
-        window.addEventListener('load', function() {
-            const token = localStorage.getItem('authToken');
-            const loginTime = localStorage.getItem('loginTime');
-            
-            if (token && loginTime) {
-                // Check if token is still valid (less than 1 hour old)
-                const loginDate = new Date(loginTime);
-                const now = new Date();
-                const hoursSinceLogin = (now - loginDate) / (1000 * 60 * 60);
-                
-                if (hoursSinceLogin < 1) {
-                    // Token might still be valid, redirect to dashboard
-                    showSuccess('You are already logged in. Redirecting...');
-                    setTimeout(() => {
-                        window.location.href = '/dashboard.html';
-                    }, 1000);
-                } else {
-                    // Token expired, clear storage
-                    localStorage.removeItem('authToken');
-                    localStorage.removeItem('username');
-                    localStorage.removeItem('loginTime');
-                }
-            }
-            
-            // Focus on username input
-            usernameInput.focus();
-        });
-
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', function() {
-            // Clear any messages when navigating
-            hideMessages();
-        });
-
-        // Handle visibility change (tab switching)
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'visible') {
-                // Clear any error messages when tab becomes visible again
-                hideMessages();
-            }
-        });
-
-        // Add some keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Escape key clears messages
-            if (e.key === 'Escape') {
-                hideMessages();
-            }
-            
-            // Ctrl+R or F5 refresh handling
-            if ((e.ctrlKey && e.key === 'r') || e.key === 'F5') {
-                hideMessages();
-            }
-        });
-
-        // Auto-hide messages after 10 seconds
-        function autoHideMessage(element) {
-            if (element.style.display === 'block')
         // Auto-hide messages after 10 seconds
         function autoHideMessage(element) {
             if (element.style.display === 'block') {
@@ -787,114 +627,7 @@
             }
         }
 
-        // Override showError and showSuccess to include auto-hide
-        const originalShowError = showError;
-        const originalShowSuccess = showSuccess;
-
-        showError = function(message) {
-            originalShowError(message);
-            autoHideMessage(errorMessage);
-        };
-
-        showSuccess = function(message) {
-            originalShowSuccess(message);
-            autoHideMessage(successMessage);
-        };
-
-        // Form validation styling
-        function addValidationStyling() {
-            const inputs = [usernameInput, passwordInput];
-            
-            inputs.forEach(input => {
-                input.addEventListener('blur', function() {
-                    if (this.value.trim()) {
-                        this.style.borderColor = 'var(--accent-color)';
-                        this.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
-                    } else {
-                        this.style.borderColor = 'var(--border-color)';
-                        this.style.backgroundColor = 'rgba(30, 41, 59, 0.6)';
-                    }
-                });
-
-                input.addEventListener('focus', function() {
-                    this.style.borderColor = 'var(--accent-color)';
-                    this.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
-                });
-            });
-        }
-
-        // Initialize validation styling
-        addValidationStyling();
-
-        // Handle connection issues
-        window.addEventListener('online', function() {
-            hideMessages();
-            showSuccess('Connection restored. You can now try logging in.');
-        });
-
-        window.addEventListener('offline', function() {
-            hideMessages();
-            showError('No internet connection. Please check your network and try again.');
-        });
-
-        // Security: Clear sensitive data on page unload
-        window.addEventListener('beforeunload', function() {
-            // Clear password field
-            passwordInput.value = '';
-            
-            // Clear any temporary data
-            if (!localStorage.getItem('authToken')) {
-                // Only clear if not successfully logged in
-                usernameInput.value = '';
-            }
-        });
-
-        // Prevent form submission if already loading
-        loginForm.addEventListener('submit', function(e) {
-            if (loginButton.disabled) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // Add smooth transitions for better UX
-        function addSmoothTransitions() {
-            const elements = document.querySelectorAll('.form-input, .login-button, .message');
-            elements.forEach(element => {
-                element.style.transition = 'all 0.3s ease';
-            });
-        }
-
-        addSmoothTransitions();
-
-        // Handle paste events for username (clean up pasted content)
-        usernameInput.addEventListener('paste', function(e) {
-            setTimeout(() => {
-                this.value = sanitizeInput(this.value);
-            }, 0);
-        });
-
-        // Add loading state management
-        let loadingTimeout;
-        
-        function setLoadingWithTimeout(isLoading, timeoutMs = 30000) {
-            setLoading(isLoading);
-            
-            if (isLoading) {
-                loadingTimeout = setTimeout(() => {
-                    setLoading(false);
-                    showError('Request timed out. Please check your connection and try again.');
-                }, timeoutMs);
-            } else {
-                if (loadingTimeout) {
-                    clearTimeout(loadingTimeout);
-                    loadingTimeout = null;
-                }
-            }
-        }
-
-        // Update the login form handler to use timeout
-        const originalFormHandler = loginForm.onsubmit;
+        // Main login form handler
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             hideMessages();
@@ -906,7 +639,7 @@
             const username = sanitizeInput(usernameInput.value);
             const password = passwordInput.value;
 
-            setLoadingWithTimeout(true);
+            setLoading(true);
 
             try {
                 const controller = new AbortController();
@@ -944,55 +677,219 @@
                     localStorage.setItem('loginTime', new Date().toISOString());
                     
                     showSuccess('Login successful! Redirecting to dashboard...');
+                    autoHideMessage(successMessage);
                     
                     loginForm.style.transform = 'scale(0.95)';
                     loginForm.style.opacity = '0.8';
                     
                     setTimeout(() => {
-                        window.location.href = '/dashboard.html';
+                        window.location.href = './dashboard.html';
                     }, 1500);
                     
                 } else {
-                    let errorMessage = 'Login failed. Please try again.';
+                    let errorMsg = 'Login failed. Please try again.';
                     
                     if (data.error) {
-                        errorMessage = data.error;
+                        errorMsg = data.error;
                     } else if (response.status === 401) {
-                        errorMessage = 'Invalid username or password. Please check your credentials and try again.';
+                        errorMsg = 'Invalid username or password. Please check your credentials and try again.';
                     } else if (response.status === 429) {
-                        errorMessage = 'Too many login attempts. Please wait a few minutes before trying again.';
+                        errorMsg = 'Too many login attempts. Please wait a few minutes before trying again.';
                     } else if (response.status === 503) {
-                        errorMessage = 'Service temporarily unavailable. Please try again later.';
+                        errorMsg = 'Service temporarily unavailable. Please try again later.';
                     } else if (response.status >= 500) {
-                        errorMessage = 'Server error. Please try again later or contact support.';
+                        errorMsg = 'Server error. Please try again later or contact support.';
                     }
                     
-                    showError(errorMessage);
+                    showError(errorMsg);
+                    autoHideMessage(errorMessage);
                     passwordInput.value = '';
                     passwordInput.focus();
                 }
             } catch (error) {
                 console.error('Login error:', error);
                 
-                let errorMessage = 'Network error. Please check your connection and try again.';
+                let errorMsg = 'Network error. Please check your connection and try again.';
                 
                 if (error.name === 'AbortError') {
-                    errorMessage = 'Request timed out. Please try again.';
+                    errorMsg = 'Request timed out. Please try again.';
                 } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    errorMessage = 'Unable to connect to the server. Please check your internet connection.';
+                    errorMsg = 'Unable to connect to the server. Please check your internet connection.';
                 } else if (error.name === 'SyntaxError') {
-                    errorMessage = 'Server returned an invalid response. Please try again.';
+                    errorMsg = 'Server returned an invalid response. Please try again.';
                 }
                 
-                showError(errorMessage);
+                showError(errorMsg);
+                autoHideMessage(errorMessage);
                 passwordInput.value = '';
                 passwordInput.focus();
             } finally {
-                setLoadingWithTimeout(false);
+                setLoading(false);
             }
         });
 
-        // Add debug mode for development
+        // Check if user is already logged in
+        window.addEventListener('load', function() {
+            const token = localStorage.getItem('authToken');
+            const loginTime = localStorage.getItem('loginTime');
+            
+            if (token && loginTime) {
+                const loginDate = new Date(loginTime);
+                const now = new Date();
+                const hoursSinceLogin = (now - loginDate) / (1000 * 60 * 60);
+                
+                if (hoursSinceLogin < 1) {
+                    showSuccess('You are already logged in. Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = './dashboard.html';
+                    }, 1000);
+                } else {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('loginTime');
+                }
+            }
+            
+            usernameInput.focus();
+        });
+
+        // Form validation styling
+        function addValidationStyling() {
+            const inputs = [usernameInput, passwordInput];
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', function() {
+                    if (this.value.trim()) {
+                        this.style.borderColor = 'var(--accent-color)';
+                        this.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+                    } else {
+                                                this.style.borderColor = 'var(--border-color)';
+                        this.style.backgroundColor = 'rgba(30, 41, 59, 0.6)';
+                    }
+                });
+
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = 'var(--accent-color)';
+                    this.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
+                });
+            });
+        }
+
+        // Initialize validation styling
+        addValidationStyling();
+
+        // Handle connection issues
+        window.addEventListener('online', function() {
+            hideMessages();
+            showSuccess('Connection restored. You can now try logging in.');
+            autoHideMessage(successMessage);
+        });
+
+        window.addEventListener('offline', function() {
+            hideMessages();
+            showError('No internet connection. Please check your network and try again.');
+        });
+
+        // Security: Clear sensitive data on page unload
+        window.addEventListener('beforeunload', function() {
+            passwordInput.value = '';
+            
+            if (!localStorage.getItem('authToken')) {
+                usernameInput.value = '';
+            }
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', function() {
+            hideMessages();
+        });
+
+        // Handle visibility change (tab switching)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                hideMessages();
+            }
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideMessages();
+            }
+            
+            if ((e.ctrlKey && e.key === 'r') || e.key === 'F5') {
+                hideMessages();
+            }
+        });
+
+        // Handle paste events for username (clean up pasted content)
+        usernameInput.addEventListener('paste', function(e) {
+            setTimeout(() => {
+                this.value = sanitizeInput(this.value);
+            }, 0);
+        });
+
+        // Add smooth transitions for better UX
+        function addSmoothTransitions() {
+            const elements = document.querySelectorAll('.form-input, .login-button, .message');
+            elements.forEach(element => {
+                element.style.transition = 'all 0.3s ease';
+            });
+        }
+
+        addSmoothTransitions();
+
+        // Performance optimization: Preload dashboard
+        function preloadDashboard() {
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = './dashboard.html';
+            document.head.appendChild(link);
+        }
+
+        // Preload dashboard after a short delay
+        setTimeout(preloadDashboard, 2000);
+
+        // Add accessibility improvements
+        function improveAccessibility() {
+            usernameInput.setAttribute('aria-label', 'Username');
+            passwordInput.setAttribute('aria-label', 'Password');
+            loginButton.setAttribute('aria-label', 'Sign in to your account');
+            
+            errorMessage.setAttribute('role', 'alert');
+            successMessage.setAttribute('role', 'status');
+            
+            const liveRegion = document.createElement('div');
+            liveRegion.setAttribute('aria-live', 'polite');
+            liveRegion.setAttribute('aria-atomic', 'true');
+            liveRegion.style.position = 'absolute';
+            liveRegion.style.left = '-10000px';
+            liveRegion.style.width = '1px';
+            liveRegion.style.height = '1px';
+            liveRegion.style.overflow = 'hidden';
+            document.body.appendChild(liveRegion);
+            
+            // Store original functions
+            const originalShowError = showError;
+            const originalShowSuccess = showSuccess;
+            
+            // Override functions to update live region
+            showError = function(message) {
+                originalShowError(message);
+                liveRegion.textContent = `Error: ${message}`;
+                autoHideMessage(errorMessage);
+            };
+            
+            showSuccess = function(message) {
+                originalShowSuccess(message);
+                liveRegion.textContent = `Success: ${message}`;
+                autoHideMessage(successMessage);
+            };
+        }
+
+        improveAccessibility();
+
+        // Debug mode for development
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             console.log('Debug mode enabled');
             window.debugLogin = {
@@ -1004,58 +901,9 @@
             };
         }
 
-        // Performance optimization: Preload dashboard
-        function preloadDashboard() {
-            const link = document.createElement('link');
-            link.rel = 'prefetch';
-            link.href = '/dashboard.html';
-            document.head.appendChild(link);
-        }
-
-        // Preload dashboard after a short delay
-        setTimeout(preloadDashboard, 2000);
-
-        // Add accessibility improvements
-        function improveAccessibility() {
-            // Add ARIA labels
-            usernameInput.setAttribute('aria-label', 'Username');
-            passwordInput.setAttribute('aria-label', 'Password');
-            loginButton.setAttribute('aria-label', 'Sign in to your account');
-            
-            // Add role attributes
-            errorMessage.setAttribute('role', 'alert');
-            successMessage.setAttribute('role', 'status');
-            
-            // Add live region for screen readers
-            const liveRegion = document.createElement('div');
-            liveRegion.setAttribute('aria-live', 'polite');
-            liveRegion.setAttribute('aria-atomic', 'true');
-            liveRegion.style.position = 'absolute';
-            liveRegion.style.left = '-10000px';
-            liveRegion.style.width = '1px';
-            liveRegion.style.height = '1px';
-            liveRegion.style.overflow = 'hidden';
-            document.body.appendChild(liveRegion);
-            
-            // Update live region when messages change
-            const originalShowError = showError;
-            const originalShowSuccess = showSuccess;
-            
-            showError = function(message) {
-                originalShowError(message);
-                liveRegion.textContent = `Error: ${message}`;
-            };
-            
-            showSuccess = function(message) {
-                originalShowSuccess(message);
-                liveRegion.textContent = `Success: ${message}`;
-            };
-        }
-
-        improveAccessibility();
-
         console.log('Login page initialized successfully');
     </script>
 </body>
 </html>
+
 
