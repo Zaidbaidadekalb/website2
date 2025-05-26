@@ -1,32 +1,731 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Management System</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Key Management - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #1e293b 75%, #0f172a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .background-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-shape {
+            position: absolute;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        .floating-shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 15%;
+            animation-delay: -5s;
+        }
+
+        .floating-shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: -10s;
+        }
+
+        .floating-shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 10%;
+            right: 30%;
+            animation-delay: -15s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(120deg); }
+            66% { transform: translateY(20px) rotate(240deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+        }
+
+        .login-container {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+            animation: slideInUp 0.8s ease-out;
+            margin: 2rem;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 20px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: logoGlow 3s ease-in-out infinite alternate;
+            position: relative;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8, #7c3aed);
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0.7;
+            animation: borderGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            from { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+            to { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+        }
+
+        @keyframes borderGlow {
+            from { opacity: 0.5; }
+            to { opacity: 0.8; }
+        }
+
+        .logo svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .login-title {
+            color: #f8fafc;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #f8fafc, #cbd5e1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            color: #e2e8f0;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(71, 85, 105, 0.5);
+            border-radius: 12px;
+            color: #f8fafc;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(30, 41, 59, 0.95);
+            box-shadow: 
+                0 0 0 3px rgba(59, 130, 246, 0.1),
+                0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #3b82f6;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .login-button:hover::before {
+            left: 100%;
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .forgot-password a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .footer p {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+                border-radius: 16px;
+            }
+
+            .login-title {
+                font-size: 1.75rem;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .logo svg {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .form-input.with-icon {
+            padding-left: 3rem;
+        }
+
+        .form-input:focus + .input-icon,
+        .input-group:hover .input-icon {
+            color: #3b82f6;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="background-elements">
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+        <div class="floating-shape"></div>
+    </div>
 
-    <main>
-        <h1>Welcome to Key Management System</h1>
-        <p>Manage your keys efficiently and securely.</p>
-        <a href="/login.html" class="cta-button">Get Started</a>
-    </main>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.4 7 14.8 8.6 14.8 10V11H16V18H8V11H9.2V10C9.2 8.6 10.6 7 12 7M12 8.2C11.2 8.2 10.4 8.7 10.4 10V11H13.6V10C13.6 8.7 12.8 8.2 12 8.2Z"/>
+                </svg>
+            </div>
+            <h1 class="login-title">Key Management</h1>
+            <p class="login-subtitle">Secure access to your dashboard</p>
+        </div>
 
-    <footer>
-        <p>&copy; 2023 Key Management System. All rights reserved.</p>
-    </footer>
+        <form id="loginForm">
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
 
-    <script src="/js/main.js" type="module"></script>
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-input with-icon" 
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                    >
+                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input with-icon" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10A2,2 0 0,1 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                    </svg>
+                    <button type="button" class="password-toggle" id="passwordToggle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="eyeIcon">
+                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-button" id="loginButton">
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <span id="buttonText">Sign In</span>
+            </button>
+
+            <div class="forgot-password">
+                <a href="#" onclick="showForgotPassword()">Forgot your password?</a>
+            </div>
+        </form>
+
+        <div class="footer">
+            <p>&copy; 2024 Key Management System. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://key-management-worker.zaidbaidaa.workers.dev';
+        
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('loginButton');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const buttonText = document.getElementById('buttonText');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        // Password visibility toggle
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            if (type === 'text') {
+                eyeIcon.innerHTML = '<path d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.09L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.76,7.13 11.37,7 12,7Z"/>';
+            } else {
+                eyeIcon.innerHTML = '<path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>';
+            }
+        });
+
+        // Input animations
+        function addInputFocusEffects() {
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                    this.parentElement.style.transition = 'transform 0.3s ease';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+
+                input.addEventListener('input', function() {
+                    if (this.value.length > 0) {
+                        this.style.borderColor = '#10b981';
+                    } else {
+                        this.style.borderColor = 'rgba(71, 85, 105, 0.5)';
+                    }
+                });
+            });
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                hideMessages();
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                hideMessages();
+            }, 3000);
+        }
+
+        // Hide messages
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        // Set loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loginButton.disabled = true;
+                loadingSpinner.style.display = 'inline-block';
+                buttonText.textContent = 'Signing In...';
+                loginButton.style.opacity = '0.8';
+            } else {
+                loginButton.disabled = false;
+                loadingSpinner.style.display = 'none';
+                buttonText.textContent = 'Sign In';
+                loginButton.style.opacity = '1';
+            }
+        }
+
+        // Handle form submission
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideMessages();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            // Basic validation
+            if (!username || !password) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            if (username.length < 3) {
+                showError('Username must be at least 3 characters long');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Password must be at least 6 characters long');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Store the token
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('username', username);
+                    
+                    showSuccess('Login successful! Redirecting...');
+                    
+                    // Add success animation
+                    loginForm.style.transform = 'scale(0.95)';
+                    loginForm.style.opacity = '0.8';
+                    
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        // You can redirect to your dashboard here
+                        window.location.href = '/dashboard.html'; // Update this to your dashboard URL
+                    }, 1500);
+                    
+                } else {
+                    // Handle different error cases
+                    if (response.status === 401) {
+                        showError('Invalid username or password');
+                    } else if (response.status === 429) {
+                        showError('Too many login attempts. Please try again later');
+                    } else if (response.status >= 500) {
+                        showError('Server error. Please try again later');
+                    } else {
+                        showError(data.error || 'Login failed. Please try again');
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Network error. Please check your connection and try again');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Forgot password function
+        function showForgotPassword() {
+            alert('Please contact your administrator to reset your password.');
+        }
+
+        // Add floating animation to background elements
+        function addFloatingAnimation() {
+            const shapes = document.querySelectorAll('.floating-shape');
+            shapes.forEach((shape, index) => {
+                shape.style.animationDelay = `${index * -5}s`;
+                shape.style.animationDuration = `${20 + index * 5}s`;
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Enter key to submit form
+            if (e.key === 'Enter' && !loginButton.disabled) {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+            
+            // Escape key to clear form
+            if (e.key === 'Escape') {
+                usernameInput.value = '';
+                passwordInput.value = '';
+                hideMessages();
+                usernameInput.focus();
+            }
+        });
+
+        // Initialize animations and effects
+        document.addEventListener('DOMContentLoaded', function() {
+            addInputFocusEffects();
+            addFloatingAnimation();
+            
+            // Focus on username input
+            usernameInput.focus();
+            
+            // Check if user is already logged in
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                // You might want to verify the token is still valid
+                console.log('User already has a token');
+            }
+            
+            // Add entrance animation delay for form elements
+            const formElements = document.querySelectorAll('.form-group, .login-button, .forgot-password');
+            formElements.forEach((element, index) => {
+                element.style.opacity = '0';
+                element.style.transform = 'translateY(20px)';
+                element.style.animation = `slideInUp 0.6s ease-out ${0.1 + index * 0.1}s forwards`;
+            });
+        });
+
+        // Add some interactive effects
+        document.addEventListener('mousemove', function(e) {
+            const container = document.querySelector('.login-container');
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+            
+            container.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        document.addEventListener('mouseleave', function() {
+            const container = document.querySelector('.login-container');
+            container.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        });
+    </script>
 </body>
 </html>
