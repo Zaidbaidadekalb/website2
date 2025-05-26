@@ -3,41 +3,3770 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Key Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css">
+    <title>Key Management System - Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-black: #000000;
+            --secondary-black: #1c1c1e;
+            --tertiary-black: #2c2c2e;
+            --quaternary-black: #3a3a3c;
+            --metallic-silver: #8e8e93;
+            --metallic-light: #aeaeb2;
+            --accent-blue: #007aff;
+            --accent-blue-dark: #0056cc;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --accent-orange: #ff9500;
+            --accent-purple: #af52de;
+            --text-primary: #ffffff;
+            --text-secondary: #f2f2f7;
+            --text-tertiary: #c7c7cc;
+            --text-quaternary: #8e8e93;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-secondary: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(28, 28, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.4);
+            --shadow-strong: 0 24px 80px rgba(0, 0, 0, 0.5);
+            --gradient-primary: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+            --gradient-secondary: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+            --gradient-accent: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
+            --gradient-success: linear-gradient(135deg, #34c759 0%, #28a745 100%);
+            --gradient-danger: linear-gradient(135deg, #ff3b30 0%, #dc3545 100%);
+            --gradient-warning: linear-gradient(135deg, #ff9500 0%, #fd7e14 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-black);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Background Effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(28, 28, 30, 0.3) 0%, rgba(0, 0, 0, 0.8) 70%);
+            z-index: -1;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 122, 255, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 122, 255, 0.6); }
+        }
+
+        /* Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .sidebar-header {
+            padding: 0 24px 32px;
+            border-bottom: 1px solid var(--border-secondary);
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-primary);
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-primary);
+        }
+
+        .logo-text h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .logo-text p {
+            font-size: 12px;
+            color: var(--text-quaternary);
+            font-weight: 400;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(58, 58, 60, 0.3);
+            border-radius: 12px;
+            border: 1px solid var(--border-secondary);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .user-details h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .user-details p {
+            font-size: 12px;
+            color: var(--text-quaternary);
+        }
+
+        /* Navigation */
+        .nav-menu {
+            padding: 0 16px;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-tertiary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-primary);
+            background: rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        .nav-link.active {
+            background: var(--gradient-accent);
+            color: white;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding: 24px 32px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .header-title h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-title p {
+            font-size: 16px;
+            color: var(--text-quaternary);
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: -0.1px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--gradient-accent);
+            color: white;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .btn-secondary {
+            background: rgba(58, 58, 60, 0.5);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(58, 58, 60, 0.8);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--gradient-success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--gradient-danger);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--gradient-warning);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transition: left 0.8s;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-strong);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Grid Layouts */
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-medium);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-icon.blue {
+            background: var(--gradient-accent);
+        }
+
+        .stat-icon.green {
+            background: var(--gradient-success);
+        }
+
+        .stat-icon.red {
+            background: var(--gradient-danger);
+        }
+
+        .stat-icon.orange {
+            background: var(--gradient-warning);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-quaternary);
+            font-weight: 500;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .stat-change.positive {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--accent-green);
+        }
+
+        .stat-change.negative {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--accent-red);
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .table-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border-secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 16px 24px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+
+        .table th {
+            background: rgba(58, 58, 60, 0.3);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table td {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .table tbody tr {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--accent-green);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+        }
+
+        .status-expired {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .status-inactive {
+            background: rgba(142, 142, 147, 0.1);
+            color: var(--metallic-silver);
+            border: 1px solid rgba(142, 142, 147, 0.2);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            letter-spacing: -0.1px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(58, 58, 60, 0.3);
+            border: 1px solid var(--border-secondary);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 400;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: rgba(58, 58, 60, 0.5);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-quaternary);
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .modal {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-strong);
+            animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-quaternary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        /* Loading States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--text-primary);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .loading-content {
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .loading-content .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--accent-blue);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        /* Messages */
+        .message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            animation: fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .message.success {
+            background: rgba(52, 199, 89, 0.1);
+            border: 1px solid rgba(52, 199, 89, 0.2);
+            color: var(--accent-green);
+        }
+
+        .message.error {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+            color: var(--accent-red);
+        }
+
+        .message.warning {
+            background: rgba(255, 149, 0, 0.1);
+            border: 1px solid rgba(255, 149, 0, 0.2);
+            color: var(--accent-orange);
+        }
+
+        .message.info {
+            background: rgba(0, 122, 255, 0.1);
+            border: 1px solid rgba(0, 122, 255, 0.2);
+            color: var(--accent-blue);
+        }
+
+        /* Search and Filters */
+        .search-container {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            background: rgba(58, 58, 60, 0.3);
+            border: 1px solid var(--border-secondary);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-quaternary);
+            width: 20px;
+            height: 20px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: var(--text-quaternary);
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 16px 20px;
+            }
+
+            .header-title h1 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .modal {
+                padding: 24px;
+                margin: 20px;
+            }
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Charts placeholder */
+        .chart-container {
+            height: 300px;
+            background: rgba(58, 58, 60, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-quaternary);
+            font-size: 14px;
+            border: 1px solid var(--border-secondary);
+        }
+
+        /* Action buttons in tables */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn.edit {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(0, 122, 255, 0.2);
+        }
+
+        .action-btn.delete {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--accent-red);
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(142, 142, 147, 0.3);
+            transition: 0.3s;
+            border-radius: 24px;
+            border: 1px solid var(--border-secondary);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .toggle-slider {
+            background: var(--accent-blue);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            background: rgba(58, 58, 60, 0.3);
+            border: 1px solid var(--border-secondary);
+            border-radius: 8px;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .pagination-btn:hover,
+        .pagination-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Server Status Indicator */
+        .server-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(58, 58, 60, 0.3);
+            border-radius: 20px;
+            border: 1px solid var(--border-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online {
+            background: var(--accent-green);
+        }
+
+        .status-dot.offline {
+            background: var(--accent-red);
+        }
+
+        .status-dot.paused {
+            background: var(--accent-orange);
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-strong);
+            z-index: 1000;
+            min-width: 200px;
+            padding: 8px 0;
+            margin-top: 8px;
+        }
+
+        .dropdown.show .dropdown-content {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-secondary);
+            margin: 8px 0;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(142, 142, 147, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-accent);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Sidebar Overlay for Mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-overlay.show {
+                display: block;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-quaternary);
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <ul>
-                    <li><a href="/dashboard.html" class="active">Dashboard</a></li>
-                    <li><a href="/settings.html">Settings</a></li>
-                    <li><a href="/account.html">Account</a></li>
-                    <li><a href="#" id="logout">Logout</a></li>
-                </ul>
-            </nav>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Loading...</p>
         </div>
-    </header>
+    </div>
 
-    <main>
-        <div class="container">
-            <div class="card glass-morphism fade-in">
-                <h1 class="slide-up">Dashboard</h1>
-                <div id="dashboard-content" class="slide-up"></div>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.6 14.8,10V11H16V16H8V11H9.2V10C9.2,8.6 10.6,7 12,7M12,8.2C11.2,8.2 10.4,8.7 10.4,10V11H13.6V10C13.6,8.7 12.8,8.2 12,8.2Z"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Key Management</h1>
+                        <p>Admin Dashboard</p>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">A</div>
+                    <div class="user-details">
+                        <h3 id="userName">Admin User</h3>
+                        <p id="userRole">Administrator</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-item">
+                    <a href="#" class="nav-link active" data-section="dashboard">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="keys">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7,14A3,3 0 0,1 10,17A3,3 0 0,1 7,20A3,3 0 0,1 4,17A3,3 0 0,1 7,14M7,16A1,1 0 0,0 6,17A1,1 0 0,0 7,18A1,1 0 0,0 8,17A1,1 0 0,0 7,16M7.91,10.08L6.5,8.66L12.33,2.83C12.71,2.45 13.34,2.45 13.72,2.83L15.14,4.25C15.52,4.63 15.52,5.26 15.14,5.64L13.72,7.06L21.17,14.5L19.75,15.92L12.31,8.47L10.89,9.89L12.31,11.31L10.89,12.72L7.91,10.08Z"/>
+                        </svg>
+                        Keys Management
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="users">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M16,4C16.88,4 17.67,4.38 18.18,5L20.5,2.69L21.81,4L19.5,6.31C19.88,6.81 20.25,7.66 20.25,8.5A4.5,4.5 0 0,1 15.75,13H15.63L14.25,14.38L15.63,15.75L14.25,17.13L12.88,15.75L9.38,19.25L8,17.88L11.5,14.38L10.13,13L11.5,11.63L12.88,13L14.25,11.63L12.88,10.25L14.25,8.88L15.63,10.25H15.75A2.5,2.5 0 0,0 18.25,7.75C18.25,7.09 17.91,6.5 17.38,6.13L15.63,7.88L14.25,6.5L16,4.75C16,4.5 16,4.25 16,4M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.04,4 12.09,4 12.13,4L11.5,4.63L12.88,6L10.75,8.13L9.38,6.75L8,8.13L9.38,9.5L6.13,12.75C6.13,12.83 6.13,12.92 6.13,13A6,6 0 0,0 12.13,19C12.21,19 12.29,19 12.38,19L15.63,15.75L14.25,14.38L16.63,12L18,13.38L16.63,14.75L17.38,15.5C16.91,15.91 16.29,16.25 15.63,16.25C15.38,16.25 15.13,16.25 14.88,16.25L12,20Z"/>
+                        </svg>
+                        User Management
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="teams">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z"/>
+                        </svg>
+                        Team Management
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="analytics">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22,21H2V3H4V19H6V17H10V19H12V16H16V19H18V17H22V21Z"/>
+                        </svg>
+                        Analytics
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="logs">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                        System Logs
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-section="settings">
+                        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                        </svg>
+                        Settings
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-title">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/>
+                        </svg>
+                    </button>
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p id="pageSubtitle">Welcome to your key management system</p>
+                </div>
+                <div class="header-actions">
+                    <div class="server-status" id="serverStatus">
+                        <div class="status-dot online" id="statusDot"></div>
+                        <span id="statusText">Server Online</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary" id="userMenuBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,8.39C13.57,9.4 15.42,10 17.42,10C18.2,10 18.95,9.91 19.67,9.74C19.88,10.45 20,11.21 20,12C20,16.41 16.41,20 12,20C9,20 6.39,18.61 5,16.39C6.61,15.83 8.5,15.5 10.5,15.5C11.18,15.5 11.84,15.55 12.5,15.64C12.34,15.27 12.17,14.9 12,14.53C11.5,14.5 11,14.5 10.5,14.5C8.35,14.5 6.39,14.86 4.67,15.5C4.24,14.42 4,13.24 4,12C4,7.59 7.59,4 12,4C15.08,4 17.78,5.75 19.25,8.42C18.58,8.78 17.83,9 17,9C15.46,9 14.03,8.41 12.97,7.46C12.65,7.96 12.39,8.16 12,8.39Z"/>
+                            </svg>
+                            Account
+                        </button>
+                        <div class="dropdown-content" id="userDropdown">
+                            <a href="#" class="dropdown-item" id="changePasswordBtn">Change Password</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" id="logoutBtn">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section class="content-section active" id="dashboard-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7,14A3,3 0 0,1 10,17A3,3 0 0,1 7,20A3,3 0 0,1 4,17A3,3 0 0,1 7,14M7,16A1,1 0 0,0 6,17A1,1 0 0,0 7,18A1,1 0 0,0 8,17A1,1 0 0,0 7,16M7.91,10.08L6.5,8.66L12.33,2.83C12.71,2.45 13.34,2.45 13.72,2.83L15.14,4.25C15.52,4.63 15.52,5.26 15.14,5.64L13.72,7.06L21.17,14.5L19.75,15.92L12.31,8.47L10.89,9.89L12.31,11.31L10.89,12.72L7.91,10.08Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalKeys">0</div>
+                        <div class="stat-label">Total Keys</div>
+                        <div class="stat-change positive" id="keysChange">+0%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="activeKeys">0</div>
+                        <div class="stat-label">Active Keys</div>
+                        <div class="stat-change positive" id="activeChange">+0%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon red">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="expiredKeys">0</div>
+                        <div class="stat-label">Expired Keys</div>
+                        <div class="stat-change negative" id="expiredChange">+0%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orange">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M11,9H13V7H11V9M11,17H13V11H11V17Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalUsage">0</div>
+                        <div class="stat-label">Total Usage</div>
+                        <div class="stat-change positive" id="usageChange">+0%</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: var(--text-primary);">Recent Activity</h3>
+                        <div class="chart-container">
+                            <p>Activity chart will be displayed here</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: var(--text-primary);">Key Usage Analytics</h3>
+                        <div class="chart-container">
+                            <p>Usage analytics chart will be displayed here</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: var(--text-primary);">Recent Keys</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Status</th>
+                                    <th>Expiration</th>
+                                    <th>Usage</th>
+                                    <th>Last Used</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentKeysTable">
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">
+                                                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M7,14A3,3 0 0,1 10,17A3,3 0 0,1 7,20A3,3 0 0,1 4,17A3,3 0 0,1 7,14M7,16A1,1 0 0,0 6,17A1,1 0 0,0 7,18A1,1 0 0,0 8,17A1,1 0 0,0 7,16M7.91,10.08L6.5,8.66L12.33,2.83C12.71,2.45 13.34,2.45 13.72,2.83L15.14,4.25C15.52,4.63 15.52,5.26 15.14,5.64L13.72,7.06L21.17,14.5L19.75,15.92L12.31,8.47L10.89,9.89L12.31,11.31L10.89,12.72L7.91,10.08Z"/>
+                                                </svg>
+                                            </div>
+                                            <h3>No keys found</h3>
+                                            <p>Create your first key to get started</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Keys Management Section -->
+            <section class="content-section" id="keys-section">
+                <div class="card">
+                    <div class="table-header">
+                        <h2 class="table-title">Keys Management</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="createKeyBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                                </svg>
+                                Create Key
+                            </button>
+                            <button class="btn btn-secondary" id="bulkActionsBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"/>
+                                </svg>
+                                Bulk Actions
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-container">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/>
+                        </svg>
+                        <input type="text" class="search-input" id="keySearchInput" placeholder="Search keys...">
+                    </div>
+
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label class="filter-label">Status</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="expired">Expired</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Date Range</label>
+                            <input type="date" class="form-input" id="dateFromFilter">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">To</label>
+                            <input type="date" class="form-input" id="dateToFilter">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">&nbsp;</label>
+                            <button class="btn btn-secondary" id="clearFiltersBtn">Clear Filters</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAllKeys">
+                                    </th>
+                                    <th>Key</th>
+                                    <th>Status</th>
+                                    <th>Expiration Date</th>
+                                    <th>Max Usage</th>
+                                    <th>Current Usage</th>
+                                    <th>HWID</th>
+                                    <th>Last Used</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keysTableBody">
+                                <!-- Keys will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="keysPagination">
+                        <!-- Pagination will be populated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Management Section -->
+            <section class="content-section" id="users-section">
+                <div class="card">
+                    <div class="table-header">
+                        <h2 class="table-title">User Management</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="createUserBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M6,10V7H4V10H1V12H4V15H6V12H9V10M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12Z"/>
+                                </svg>
+                                Create User
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Users will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Team Management Section -->
+            <section class="content-section" id="teams-section">
+                <div class="card">
+                    <div class="table-header">
+                        <h2 class="table-title">Team Management</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" id="createTeamBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                                </svg>
+                                Create Team
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Team Name</th>
+                                    <th>Members</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teamsTableBody">
+                                <!-- Teams will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section class="content-section" id="analytics-section">
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: var(--text-primary);">Key Usage Over Time</h3>
+                        <div class="chart-container">
+                            <p>Usage analytics chart will be displayed here</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: var(--text-primary);">Most Used Keys</h3>
+                        <div id="mostUsedKeys">
+                            <!-- Most used keys will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: var(--text-primary);">Key Statistics</h3>
+                    <div class="grid grid-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgUsagePerKey">0</div>
+                            <div class="stat-label">Average Usage Per Key</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="keysNearingExpiration">0</div>
+                            <div class="stat-label">Keys Expiring Soon</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="keysNearingMaxUsage">0</div>
+                            <div class="stat-label">Keys Near Max Usage</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Logs Section -->
+            <section class="content-section" id="logs-section">
+                <div class="card">
+                    <div class="table-header">
+                        <h2 class="table-title">System Logs</h2>
+                        <div class="table-actions">
+                            <button class="btn btn-secondary" id="refreshLogsBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                                </svg>
+                                Refresh
+                            </button>
+                            <button class="btn btn-danger" id="clearLogsBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                                </svg>
+                                Clear Logs
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label class="filter-label">Log Type</label>
+                            <select class="form-select" id="logTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="info">Info</option>
+                                <option value="error">Error</option>
+                                <option value="warning">Warning</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Date From</label>
+                            <input type="datetime-local" class="form-input" id="logDateFromFilter">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Date To</label>
+                            <input type="datetime-local" class="form-input" id="logDateToFilter">
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">&nbsp;</label>
+                            <button class="btn btn-secondary" id="searchLogsBtn">Search Logs</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Type</th>
+                                    <th>Message</th>
+                                    <th>Location</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <!-- Logs will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section class="content-section" id="settings-section">
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: var(--text-primary);">Server Controls</h3>
+                        <div class="form-group">
+                            <label class="form-label">Server Status</label>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <button class="btn btn-success" id="resumeServerBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M8,5.14V19.14L19,12.14L8,5.14Z"/>
+                                    </svg>
+                                    Resume Server
+                                <button class="btn btn-warning" id="pauseServerBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M14,19H18V5H14M6,19H10V5H6V19Z"/>
+                                    </svg>
+                                    Pause Server
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Bulk Operations</label>
+                            <div style="display: flex; gap: 12px; flex-direction: column;">
+                                <button class="btn btn-danger" id="deleteAllKeysBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                                    </svg>
+                                    Delete All Keys
+                                </button>
+                                <button class="btn btn-danger" id="deleteAllLogsBtn">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                                    </svg>
+                                    Delete All Logs
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px; color: var(--text-primary);">Account Settings</h3>
+                        <div class="form-group">
+                            <label class="form-label">Current User</label>
+                            <p style="color: var(--text-secondary); margin-bottom: 16px;" id="currentUserInfo">Loading...</p>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" id="changePasswordSettingsBtn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10A2,2 0 0,1 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                                </svg>
+                                Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 20px; color: var(--text-primary);">System Information</h3>
+                    <div class="grid grid-3">
+                        <div class="stat-card">
+                            <div class="stat-value" id="systemUptime">Loading...</div>
+                            <div class="stat-label">System Uptime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalRequests">Loading...</div>
+                            <div class="stat-label">Total Requests</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="systemVersion">v1.0.0</div>
+                            <div class="stat-label">System Version</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Create/Edit Key Modal -->
+    <div class="modal-overlay" id="keyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="keyModalTitle">Create New Key</h3>
+                <button class="modal-close" id="closeKeyModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="keyForm">
+                <div class="form-group">
+                    <label class="form-label">Key (leave empty to auto-generate)</label>
+                    <input type="text" class="form-input" id="keyInput" placeholder="KEY-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Expiration Date</label>
+                    <input type="datetime-local" class="form-input" id="expirationInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Max Usage</label>
+                    <input type="number" class="form-input" id="maxUsageInput" value="1" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">HWID (Hardware ID)</label>
+                    <input type="text" class="form-input" id="hwidInput" placeholder="Optional - will be set on first use">
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="isWhitelistedInput" checked>
+                            <span class="toggle-slider"></span>
+                        </div>
+                        <span class="form-label" style="margin: 0;">Active (Whitelisted)</span>
+                    </label>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" id="cancelKeyBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveKeyBtn">
+                        <span id="saveKeyText">Create Key</span>
+                        <div class="loading" id="saveKeyLoading" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create/Edit User Modal -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="userModalTitle">Create New User</h3>
+                <button class="modal-close" id="closeUserModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="userForm">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="usernameInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="passwordInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select" id="roleInput" required>
+                        <option value="">Select Role</option>
+                        <option value="admin">Administrator</option>
+                        <option value="user">User</option>
+                        <option value="team">Team Member</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" id="cancelUserBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveUserBtn">
+                        <span id="saveUserText">Create User</span>
+                        <div class="loading" id="saveUserLoading" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create/Edit Team Modal -->
+    <div class="modal-overlay" id="teamModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="teamModalTitle">Create New Team</h3>
+                <button class="modal-close" id="closeTeamModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="teamForm">
+                <div class="form-group">
+                    <label class="form-label">Team Name</label>
+                    <input type="text" class="form-input" id="teamNameInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Members (comma-separated usernames)</label>
+                    <textarea class="form-textarea" id="teamMembersInput" rows="4" placeholder="user1, user2, user3"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" id="cancelTeamBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveTeamBtn">
+                        <span id="saveTeamText">Create Team</span>
+                        <div class="loading" id="saveTeamLoading" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="changePasswordModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Change Password</h3>
+                <button class="modal-close" id="closeChangePasswordModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input type="password" class="form-input" id="currentPasswordInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    <input type="password" class="form-input" id="newPasswordInput" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-input" id="confirmPasswordInput" required>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" id="cancelChangePasswordBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveChangePasswordBtn">
+                        <span id="saveChangePasswordText">Change Password</span>
+                        <div class="loading" id="saveChangePasswordLoading" style="display: none;"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Modal -->
+    <div class="modal-overlay" id="bulkActionsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Bulk Actions</h3>
+                <button class="modal-close" id="closeBulkActionsModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="bulkActionsContent">
+                <div class="form-group">
+                    <label class="form-label">Select Action</label>
+                    <select class="form-select" id="bulkActionSelect">
+                        <option value="">Choose an action</option>
+                        <option value="delete">Delete Selected Keys</option>
+                        <option value="activate">Activate Selected Keys</option>
+                        <option value="deactivate">Deactivate Selected Keys</option>
+                        <option value="extend">Extend Expiration Date</option>
+                        <option value="generate">Generate Multiple Keys</option>
+                    </select>
+                </div>
+                <div id="bulkActionOptions" style="display: none;">
+                    <!-- Dynamic options based on selected action -->
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary" id="cancelBulkActionBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="executeBulkActionBtn">
+                        <span id="executeBulkActionText">Execute</span>
+                        <div class="loading" id="executeBulkActionLoading" style="display: none;"></div>
+                    </button>
+                </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 Key Management System. All rights reserved.</p>
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirmationTitle">Confirm Action</h3>
+                <button class="modal-close" id="closeConfirmationModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage">Are you sure you want to proceed?</p>
+            </div>
+            <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+                <button type="button" class="btn btn-secondary" id="cancelConfirmationBtn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmActionBtn">
+                    <span id="confirmActionText">Confirm</span>
+                    <div class="loading" id="confirmActionLoading" style="display: none;"></div>
+                </button>
+            </div>
         </div>
-    </footer>
+    </div>
 
-    <div id="notification" class="notification"></div>
+    <script>
+        // Configuration
+        const API_BASE_URL = 'https://key-management-worker.zaidbaidaa.workers.dev';
+        
+        // Global variables
+        let currentUser = null;
+        let authToken = null;
+        let currentSection = 'dashboard';
+        let keysData = [];
+        let usersData = [];
+        let teamsData = [];
+        let logsData = [];
+        let selectedKeys = new Set();
+        let currentPage = 1;
+        const itemsPerPage = 10;
 
-    <script src="/js/dashboard.js" type="module"></script>
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const contentSections = document.querySelectorAll('.content-section');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+        const userName = document.getElementById('userName');
+        const userRole = document.getElementById('userRole');
+        const userAvatar = document.getElementById('userAvatar');
+        const serverStatus = document.getElementById('serverStatus');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        // Utility Functions
+        function showLoading() {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            // Add to body
+            document.body.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+
+            // Manual close
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Never';
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+
+        function formatRelativeTime(dateString) {
+            if (!dateString) return 'Never';
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            return `${days}d ago`;
+        }
+
+        function isKeyExpired(expirationDate) {
+            return new Date(expirationDate) < new Date();
+        }
+
+        function getKeyStatus(key) {
+            if (isKeyExpired(key.expirationDate)) return 'expired';
+            if (key.isWhitelisted === 0) return 'inactive';
+            if (key.usageCount >= key.maxUsage) return 'exhausted';
+            return 'active';
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                active: '<span class="badge badge-success">Active</span>',
+                inactive: '<span class="badge badge-secondary">Inactive</span>',
+                expired: '<span class="badge badge-danger">Expired</span>',
+                exhausted: '<span class="badge badge-warning">Exhausted</span>'
+            };
+            return badges[status] || '<span class="badge badge-secondary">Unknown</span>';
+        }
+
+        // API Functions
+        async function makeRequest(endpoint, options = {}) {
+            try {
+                const url = `${API_BASE_URL}${endpoint}`;
+                const config = {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`,
+                        ...options.headers
+                    },
+                    ...options
+                };
+
+                const response = await fetch(url, config);
+                
+                if (response.status === 401) {
+                    // Token expired or invalid
+                    logout();
+                    return null;
+                }
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+
+                return data;
+            } catch (error) {
+                console.error('API Request failed:', error);
+                showNotification(`Request failed: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Authentication
+        function checkAuth() {
+            authToken = localStorage.getItem('authToken');
+            const username = localStorage.getItem('username');
+            const loginTime = localStorage.getItem('loginTime');
+
+            if (!authToken || !username || !loginTime) {
+                redirectToLogin();
+                return false;
+            }
+
+            // Check if token is expired (24 hours)
+            const loginDate = new Date(loginTime);
+            const now = new Date();
+            const hoursSinceLogin = (now - loginDate) / (1000 * 60 * 60);
+
+            if (hoursSinceLogin >= 24) {
+                logout();
+                return false;
+            }
+
+            currentUser = { username };
+            updateUserInfo();
+            return true;
+        }
+
+        function updateUserInfo() {
+            if (currentUser) {
+                userName.textContent = currentUser.username;
+                userRole.textContent = 'Administrator';
+                userAvatar.textContent = currentUser.username.charAt(0).toUpperCase();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('username');
+            localStorage.removeItem('loginTime');
+            redirectToLogin();
+        }
+
+        function redirectToLogin() {
+            window.location.href = './index.html';
+        }
+
+        // Navigation
+        function switchSection(sectionName) {
+            // Update navigation
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.section === sectionName) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Update content sections
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === `${sectionName}-section`) {
+                    section.classList.add('active');
+                }
+            });
+
+            // Update page title
+            const titles = {
+                dashboard: { title: 'Dashboard', subtitle: 'Welcome to your key management system' },
+                keys: { title: 'Keys Management', subtitle: 'Manage and monitor your API keys' },
+                users: { title: 'User Management', subtitle: 'Manage system users and permissions' },
+                teams: { title: 'Team Management', subtitle: 'Organize users into teams' },
+                analytics: { title: 'Analytics', subtitle: 'View usage statistics and insights' },
+                logs: { title: 'System Logs', subtitle: 'Monitor system activity and errors' },
+                settings: { title: 'Settings', subtitle: 'Configure system preferences' }
+            };
+
+            if (titles[sectionName]) {
+                pageTitle.textContent = titles[sectionName].title;
+                pageSubtitle.textContent = titles[sectionName].subtitle;
+            }
+
+            currentSection = sectionName;
+
+            // Load section data
+            loadSectionData(sectionName);
+
+            // Close mobile menu
+            sidebar.classList.remove('mobile-open');
+            sidebarOverlay.classList.remove('show');
+        }
+
+        // Data Loading Functions
+        async function loadSectionData(section) {
+            try {
+                switch (section) {
+                    case 'dashboard':
+                        await loadDashboardData();
+                        break;
+                    case 'keys':
+                        await loadKeysData();
+                        break;
+                    case 'users':
+                        await loadUsersData();
+                        break;
+                    case 'teams':
+                        await loadTeamsData();
+                        break;
+                    case 'analytics':
+                        await loadAnalyticsData();
+                        break;
+                    case 'logs':
+                        await loadLogsData();
+                        break;
+                    case 'settings':
+                        await loadSettingsData();
+                        break;
+                }
+            } catch (error) {
+                console.error(`Failed to load ${section} data:`, error);
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                showLoading();
+                
+                // Load keys statistics
+                const keys = await makeRequest('/keys');
+                if (keys) {
+                    keysData = keys;
+                    updateDashboardStats();
+                    updateRecentKeysTable();
+                }
+
+                // Load server status
+                await updateServerStatus();
+                
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateDashboardStats() {
+            const totalKeys = keysData.length;
+            const activeKeys = keysData.filter(key => getKeyStatus(key) === 'active').length;
+            const expiredKeys = keysData.filter(key => getKeyStatus(key) === 'expired').length;
+            const totalUsage = keysData.reduce((sum, key) => sum + key.usageCount, 0);
+
+            document.getElementById('totalKeys').textContent = totalKeys;
+            document.getElementById('activeKeys').textContent = activeKeys;
+            document.getElementById('expiredKeys').textContent = expiredKeys;
+            document.getElementById('totalUsage').textContent = totalUsage;
+
+            // Update change percentages (placeholder for now)
+            document.getElementById('keysChange').textContent = '+12%';
+            document.getElementById('activeChange').textContent = '+8%';
+            document.getElementById('expiredChange').textContent = '+3%';
+            document.getElementById('usageChange').textContent = '+25%';
+        }
+
+        function updateRecentKeysTable() {
+            const tbody = document.getElementById('recentKeysTable');
+            
+            if (keysData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7,14A3,3 0 0,1 10,17A3,3 0 0,1 7,20A3,3 0 0,1 4,17A3,3 0 0,1 7,14M7,16A1,1 0 0,0 6,17A1,1 0 0,0 7,18A1,1 0 0,0 8,17A1,1 0 0,0 7,16M7.91,10.08L6.5,8.66L12.33,2.83C12.71,2.45 13.34,2.45 13.72,2.83L15.14,4.25C15.52,4.63 15.52,5.26 15.14,5.64L13.72,7.06L21.17,14.5L19.75,15.92L12.31,8.47L10.89,9.89L12.31,11.31L10.89,12.72L7.91,10.08Z"/>
+                                    </svg>
+                                </div>
+                                <h3>No keys found</h3>
+                                <p>Create your first key to get started</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Show recent 5 keys
+            const recentKeys = keysData.slice(0, 5);
+            tbody.innerHTML = recentKeys.map(key => {
+                const status = getKeyStatus(key);
+                return `
+                    <tr>
+                        <td>
+                            <code class="key-display">${key.key}</code>
+                        </td>
+                        <td>${getStatusBadge(status)}</td>
+                        <td>${formatDate(key.expirationDate)}</td>
+                        <td>
+                            <div class="usage-progress">
+                                <span>${key.usageCount}/${key.maxUsage}</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${(key.usageCount / key.maxUsage) * 100}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${formatRelativeTime(key.lastUsed)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        async function loadKeysData() {
+            try {
+                showLoading();
+                const keys = await makeRequest('/keys');
+                if (keys) {
+                    keysData = keys;
+                    updateKeysTable();
+                    updateKeysPagination();
+                }
+            } catch (error) {
+                console.error('Failed to load keys data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateKeysTable() {
+            const tbody = document.getElementById('keysTableBody');
+            
+            if (keysData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="empty-state">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7,14A3,3 0 0,1 10,17A3,3 0 0,1 7,20A3,3 0 0,1 4,17A3,3 0 0,1 7,14M7,16A1,1 0 0,0 6,17A1,1 0 0,0 7,18A1,1 0 0,0 8,17A1,1 0 0,0 7,16M7.91,10.08L6.5,8.66L12.33,2.83C12.71,2.45 13.34,2.45 13.72,2.83L15.14,4.25C15.52,4.63 15.52,5.26 15.14,5.64L13.72,7.06L21.17,14.5L19.75,15.92L12.31,8.47L10.89,9.89L12.31,11.31L10.89,12.72L7.91,10.08Z"/>
+                                    </svg>
+                                </div>
+                                <h3>No keys found</h3>
+                                <p>Create your first key to get started</p>
+                                <button class="btn btn-primary" onclick="openCreateKeyModal()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                                    </svg>
+                                    Create Key
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Apply pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const paginatedKeys = keysData.slice(startIndex, endIndex);
+
+            tbody.innerHTML = paginatedKeys.map(key => {
+                const status = getKeyStatus(key);
+                return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="key-checkbox" value="${key.id}" ${selectedKeys.has(key.id) ? 'checked' : ''}>
+                        </td>
+                        <td>
+                            <code class="key-display">${key.key}</code>
+                        </td>
+                        <td>${getStatusBadge(status)}</td>
+                        <td>${formatDate(key.expirationDate)}</td>
+                        <td>${key.maxUsage}</td>
+                        <td>
+                            <div class="usage-progress">
+                                <span>${key.usageCount}/${key.maxUsage}</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${(key.usageCount / key.maxUsage) * 100}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${key.hwid || 'Not set'}</td>
+                        <td>${formatRelativeTime(key.lastUsed)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon" onclick="editKey('${key.id}')" title="Edit">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"/>
+                                    </svg>
+                                </button>
+                                <button class="btn-icon btn-danger" onclick="deleteKey('${key.id}')" title="Delete">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Add event listeners for checkboxes
+            document.querySelectorAll('.key-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', handleKeySelection);
+            });
+        }
+
+        function updateKeysPagination() {
+            const pagination = document.getElementById('keysPagination');
+            const totalPages = Math.ceil(keysData.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"/>
+                    </svg>
+                    Previous
+                </button>
+            `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    paginationHTML += `
+                        <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
+                                onclick="changePage(${i})">${i}</button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    paginationHTML += '<span class="pagination-ellipsis">...</span>';
+                }
+            }
+
+            // Next button
+            paginationHTML += `
+                <button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                        onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    Next
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                    </svg>
+                </button>
+            `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(keysData.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            updateKeysTable();
+            updateKeysPagination();
+        }
+
+        function handleKeySelection(event) {
+            const keyId = event.target.value;
+            if (event.target.checked) {
+                selectedKeys.add(keyId);
+            } else {
+                selectedKeys.delete(keyId);
+            }
+
+            // Update select all checkbox
+            const selectAllCheckbox = document.getElementById('selectAllKeys');
+            const allCheckboxes = document.querySelectorAll('.key-checkbox');
+            const checkedCheckboxes = document.querySelectorAll('.key-checkbox:checked');
+            
+            selectAllCheckbox.indeterminate = checkedCheckboxes.length > 0 && checkedCheckboxes.length < allCheckboxes.length;
+            selectAllCheckbox.checked = checkedCheckboxes.length === allCheckboxes.length && allCheckboxes.length > 0;
+        }
+
+        async function loadUsersData() {
+            try {
+                showLoading();
+                const users = await makeRequest('/users');
+                if (users) {
+                    usersData = users;
+                    updateUsersTable();
+                }
+            } catch (error) {
+                console.error('Failed to load users data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateUsersTable() {
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (usersData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                                    </svg>
+                                </div>
+                                <h3>No users found</h3>
+                                <p>Create your first user to get started</p>
+                                <button class="btn btn-primary" onclick="openCreateUserModal()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                                    </svg>
+                                    Create User
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = usersData.map(user => `
+                <tr>
+                    <td>${user.username}</td>
+                    <td>
+                        <span class="badge badge-${user.role === 'admin' ? 'primary' : user.role === 'user' ? 'secondary' : 'info'}">
+                            ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                        </span>
+                    </td>
+                    <td>${formatDate(user.createdAt)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="editUser('${user.username}')" title="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="deleteUser('${user.username}')" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadTeamsData() {
+            try {
+                showLoading();
+                const teams = await makeRequest('/teams');
+                if (teams) {
+                    teamsData = teams;
+                    updateTeamsTable();
+                }
+            } catch (error) {
+                console.error('Failed to load teams data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateTeamsTable() {
+            const tbody = document.getElementById('teamsTableBody');
+            
+            if (teamsData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="empty-state">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20V18.5C24,17.11 22.11,15.94 19.55,15.6C20.14,16.28 20.5,17.22 20.5,18.25V20H24Z"/>
+                                    </svg>
+                                </div>
+                                <h3>No teams found</h3>
+                                <p>Create your first team to get started</p>
+                                <button class="btn btn-primary" onclick="openCreateTeamModal()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                                    </svg>
+                                    Create Team
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = teamsData.map(team => `
+                <tr>
+                    <td>${team.name}</td>
+                    <td>
+                        <div class="team-members">
+                            ${team.members.slice(0, 3).map(member => 
+                                `<span class="member-badge">${member}</span>`
+                            ).join('')}
+                            ${team.members.length > 3 ? `<span class="member-badge">+${team.members.length - 3}</span>` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon" onclick="editTeam('${team.name}')" title="Edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"/>
+                                </svg>
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="deleteTeam('${team.name}')" title="Delete">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadAnalyticsData() {
+            try {
+                showLoading();
+                const analytics = await makeRequest('/keys/analytics');
+                if (analytics) {
+                    updateAnalyticsDisplay(analytics);
+                }
+            } catch (error) {
+                console.error('Failed to load analytics data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateAnalyticsDisplay(analytics) {
+            document.getElementById('avgUsagePerKey').textContent = analytics.averageUsagePerKey.toFixed(1);
+            document.getElementById('keysNearingExpiration').textContent = analytics.keysNearingExpiration || 0;
+            document.getElementById('keysNearingMaxUsage').textContent = analytics.keysNearingMaxUsage?.length || 0;
+
+            // Update most used keys
+            const mostUsedContainer = document.getElementById('mostUsedKeys');
+            if (analytics.mostUsedKey && analytics.mostUsedKey.usageCount > 0) {
+                mostUsedContainer.innerHTML = `
+                    <div class="most-used-key">
+                        <code>${analytics.mostUsedKey.key}</code>
+                        <span class="usage-count">${analytics.mostUsedKey.usageCount} uses</span>
+                    </div>
+                `;
+            } else {
+                mostUsedContainer.innerHTML = '<p>No usage data available</p>';
+            }
+        }
+
+        async function loadLogsData() {
+            try {
+                showLoading();
+                const logs = await makeRequest('/logs');
+                if (logs) {
+                    logsData = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                    updateLogsTable();
+                }
+            } catch (error) {
+                console.error('Failed to load logs data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function updateLogsTable() {
+            const tbody = document.getElementById('logsTableBody');
+            
+            if (logsData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">
+                                    <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                    </svg>
+                                </div>
+                                <h3>No logs found</h3>
+                                <p>System logs will appear here</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = logsData.slice(0, 100).map(log => {
+                const logTypeClass = log.type === 'error' ? 'danger' : log.type === 'warning' ? 'warning' : 'info';
+                return `
+                    <tr>
+                        <td>${formatDate(log.timestamp)}</td>
+                        <td>
+                            <span class="badge badge-${logTypeClass}">
+                                ${log.type.toUpperCase()}
+                            </span>
+                        </td>
+                        <td>${log.message}</td>
+                        <td>${log.location}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function loadSettingsData() {
+            try {
+                showLoading();
+                
+                // Update current user info
+                document.getElementById('currentUserInfo').textContent = `${currentUser.username} (Administrator)`;
+                
+                // Load system status
+                await updateServerStatus();
+                
+            } catch (error) {
+                console.error('Failed to load settings data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function updateServerStatus() {
+            try {
+                const status = await makeRequest('/status');
+                if (status) {
+                    statusText.textContent = 'Online';
+                    statusDot.className = 'status-dot online';
+                    document.getElementById('systemUptime').textContent = status.workerRuntime || 'Unknown';
+                }
+            } catch (error) {
+                statusText.textContent = 'Offline';
+                statusDot.className = 'status-dot offline';
+                console.error('Failed to update server status:', error);
+            }
+        }
+
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function openCreateKeyModal() {
+            document.getElementById('keyModalTitle').textContent = 'Create New Key';
+            document.getElementById('saveKeyText').textContent = 'Create Key';
+            document.getElementById('keyForm').reset();
+            
+            // Set default expiration date (30 days from now)
+            const defaultExpiration = new Date();
+            defaultExpiration.setDate(defaultExpiration.getDate() + 30);
+            document.getElementById('expirationInput').value = defaultExpiration.toISOString().slice(0, 16);
+            
+            openModal('keyModal');
+        }
+
+        function openCreateUserModal() {
+            document.getElementById('userModalTitle').textContent = 'Create New User';
+            document.getElementById('saveUserText').textContent = 'Create User';
+            document.getElementById('userForm').reset();
+            openModal('userModal');
+        }
+
+        function openCreateTeamModal() {
+            document.getElementById('teamModalTitle').textContent = 'Create New Team';
+            document.getElementById('saveTeamText').textContent = 'Create Team';
+            document.getElementById('teamForm').reset();
+            openModal('teamModal');
+        }
+
+        async function editKey(keyId) {
+            const key = keysData.find(k => k.id === keyId);
+            if (!key) return;
+
+            document.getElementById('keyModalTitle').textContent = 'Edit Key';
+            document.getElementById('saveKeyText').textContent = 'Update Key';
+            
+            document.getElementById('keyInput').value = key.key;
+            document.getElementById('expirationInput').value = new Date(key.expirationDate).toISOString().slice(0, 16);
+            document.getElementById('maxUsageInput').value = key.maxUsage;
+            document.getElementById('hwidInput').value = key.hwid || '';
+            document.getElementById('isWhitelistedInput').checked = key.isWhitelisted === 1;
+            
+            // Store the key ID for updating
+            document.getElementById('keyForm').dataset.keyId = keyId;
+            
+            openModal('keyModal');
+        }
+
+        async function editUser(username) {
+            const user = usersData.find(u => u.username === username);
+            if (!user) return;
+
+            document.getElementById('userModalTitle').textContent = 'Edit User';
+            document.getElementById('saveUserText').textContent = 'Update User';
+            
+            document.getElementById('usernameInput').value = user.username;
+            document.getElementById('usernameInput').disabled = true;
+            document.getElementById('passwordInput').placeholder = 'Leave empty to keep current password';
+            document.getElementById('passwordInput').required = false;
+            document.getElementById('roleInput').value = user.role;
+            
+            // Store the username for updating
+            document.getElementById('userForm').dataset.username = username;
+            
+            openModal('userModal');
+        }
+
+        async function editTeam(teamName) {
+            const team = teamsData.find(t => t.name === teamName);
+            if (!team) return;
+
+            document.getElementById('teamModalTitle').textContent = 'Edit Team';
+            document.getElementById('saveTeamText').textContent = 'Update Team';
+            
+            document.getElementById('teamNameInput').value = team.name;
+            document.getElementById('teamNameInput').disabled = true;
+            document.getElementById('teamMembersInput').value = team.members.join(', ');
+            
+            // Store the team name for updating
+            document.getElementById('teamForm').dataset.teamName = teamName;
+            
+            openModal('teamModal');
+        }
+
+        async function deleteKey(keyId) {
+            const key = keysData.find(k => k.id === keyId);
+            if (!key) return;
+
+            showConfirmation(
+                'Delete Key',
+                `Are you sure you want to delete the key "${key.key}"? This action cannot be undone.`,
+                async () => {
+                    try {
+                        await makeRequest(`/keys/${keyId}`, { method: 'DELETE' });
+                        showNotification('Key deleted successfully', 'success');
+                        await loadKeysData();
+                        if (currentSection === 'dashboard') {
+                            await loadDashboardData();
+                        }
+                    } catch (error) {
+                        showNotification('Failed to delete key', 'error');
+                    }
+                }
+            );
+        }
+
+        async function deleteUser(username) {
+            showConfirmation(
+                'Delete User',
+                `Are you sure you want to delete the user "${username}"? This action cannot be undone.`,
+                async () => {
+                    try {
+                        await makeRequest(`/users/${username}`, { method: 'DELETE' });
+                        showNotification('User deleted successfully', 'success');
+                        await loadUsersData();
+                    } catch (error) {
+                        showNotification('Failed to delete user', 'error');
+                    }
+                }
+            );
+        }
+
+        async function deleteTeam(teamName) {
+            showConfirmation(
+                'Delete Team',
+                `Are you sure you want to delete the team "${teamName}"? This action cannot be undone.`,
+                async () => {
+                    try {
+                        await makeRequest(`/teams/${teamName}`, { method: 'DELETE' });
+                        showNotification('Team deleted successfully', 'success');
+                        await loadTeamsData();
+                    } catch (error) {
+                        showNotification('Failed to delete team', 'error');
+                    }
+                }
+            );
+        }
+
+        function showConfirmation(title, message, onConfirm) {
+            document.getElementById('confirmationTitle').textContent = title;
+            document.getElementById('confirmationMessage').textContent = message;
+            
+            const confirmBtn = document.getElementById('confirmActionBtn');
+            confirmBtn.onclick = async () => {
+                try {
+                    document.getElementById('confirmActionText').style.display = 'none';
+                    document.getElementById('confirmActionLoading').style.display = 'block';
+                    confirmBtn.disabled = true;
+                    
+                    await onConfirm();
+                    closeModal('confirmationModal');
+                } catch (error) {
+                    console.error('Confirmation action failed:', error);
+                } finally {
+                    document.getElementById('confirmActionText').style.display = 'block';
+                    document.getElementById('confirmActionLoading').style.display = 'none';
+                    confirmBtn.disabled = false;
+                }
+            };
+            
+            openModal('confirmationModal');
+        }
+
+        // Form Handlers
+        document.getElementById('keyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const keyData = {
+                key: document.getElementById('keyInput').value || undefined,
+                expirationDate: document.getElementById('expirationInput').value,
+                maxUsage: parseInt(document.getElementById('maxUsageInput').value),
+                hwid: document.getElementById('hwidInput').value || undefined,
+                isWhitelisted: document.getElementById('isWhitelistedInput').checked
+            };
+
+            const keyId = e.target.dataset.keyId;
+            const isEdit = !!keyId;
+
+            try {
+                document.getElementById('saveKeyText').style.display = 'none';
+                document.getElementById('saveKeyLoading').style.display = 'block';
+                document.getElementById('saveKeyBtn').disabled = true;
+
+                if (isEdit) {
+                    await makeRequest(`/keys/${keyId}/edit`, {
+                        method: 'PUT',
+                        body: JSON.stringify(keyData)
+                    });
+                    showNotification('Key updated successfully', 'success');
+                } else {
+                    await makeRequest('/keys', {
+                        method: 'POST',
+                        body: JSON.stringify(keyData)
+                    });
+                    showNotification('Key created successfully', 'success');
+                }
+
+                closeModal('keyModal');
+                await loadKeysData();
+                if (currentSection === 'dashboard') {
+                    await loadDashboardData();
+                }
+
+                // Reset form
+                e.target.reset();
+                delete e.target.dataset.keyId;
+                document.getElementById('usernameInput').disabled = false;
+
+            } catch (error) {
+                showNotification(`Failed to ${isEdit ? 'update' : 'create'} key`, 'error');
+            } finally {
+                document.getElementById('saveKeyText').style.display = 'block';
+                document.getElementById('saveKeyLoading').style.display = 'none';
+                document.getElementById('saveKeyBtn').disabled = false;
+            }
+        });
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const userData = {
+                username: document.getElementById('usernameInput').value,
+                password: document.getElementById('passwordInput').value,
+                role: document.getElementById('roleInput').value
+            };
+
+            const username = e.target.dataset.username;
+            const isEdit = !!username;
+
+            try {
+                document.getElementById('saveUserText').style.display = 'none';
+                document.getElementById('saveUserLoading').style.display = 'block';
+                document.getElementById('saveUserBtn').disabled = true;
+
+                if (isEdit) {
+                    // Remove password if empty for edit
+                    if (!userData.password) {
+                        delete userData.password;
+                    }
+                    await makeRequest(`/users/${username}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(userData)
+                    });
+                    showNotification('User updated successfully', 'success');
+                } else {
+                    await makeRequest('/users', {
+                        method: 'POST',
+                        body: JSON.stringify(userData)
+                    });
+                    showNotification('User created successfully', 'success');
+                }
+
+                closeModal('userModal');
+                await loadUsersData();
+
+                // Reset form
+                e.target.reset();
+                delete e.target.dataset.username;
+                document.getElementById('usernameInput').disabled = false;
+                document.getElementById('passwordInput').placeholder = 'Enter password';
+                document.getElementById('passwordInput').required = true;
+
+            } catch (error) {
+                showNotification(`Failed to ${isEdit ? 'update' : 'create'} user`, 'error');
+            } finally {
+                document.getElementById('saveUserText').style.display = 'block';
+                document.getElementById('saveUserLoading').style.display = 'none';
+                document.getElementById('saveUserBtn').disabled = false;
+            }
+        });
+
+        document.getElementById('teamForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const teamData = {
+                teamName: document.getElementById('teamNameInput').value,
+                members: document.getElementById('teamMembersInput').value
+                    .split(',')
+                    .map(member => member.trim())
+                    .filter(member => member.length > 0)
+            };
+
+            const teamName = e.target.dataset.teamName;
+            const isEdit = !!teamName;
+
+            try {
+                document.getElementById('saveTeamText').style.display = 'none';
+                document.getElementById('saveTeamLoading').style.display = 'block';
+                document.getElementById('saveTeamBtn').disabled = true;
+
+                if (isEdit) {
+                    await makeRequest(`/teams/${teamName}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ members: teamData.members })
+                    });
+                    showNotification('Team updated successfully', 'success');
+                } else {
+                    await makeRequest('/teams', {
+                        method: 'POST',
+                        body: JSON.stringify(teamData)
+                    });
+                    showNotification('Team created successfully', 'success');
+                }
+
+                closeModal('teamModal');
+                await loadTeamsData();
+
+                // Reset form
+                e.target.reset();
+                delete e.target.dataset.teamName;
+                document.getElementById('teamNameInput').disabled = false;
+
+            } catch (error) {
+                showNotification(`Failed to ${isEdit ? 'update' : 'create'} team`, 'error');
+            } finally {
+                document.getElementById('saveTeamText').style.display = 'block';
+                document.getElementById('saveTeamLoading').style.display = 'none';
+                document.getElementById('saveTeamBtn').disabled = false;
+            }
+        });
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPasswordInput').value;
+            const newPassword = document.getElementById('newPasswordInput').value;
+            const confirmPassword = document.getElementById('confirmPasswordInput').value;
+
+            if (newPassword !== confirmPassword) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showNotification('New password must be at least 6 characters long', 'error');
+                return;
+            }
+
+            try {
+                document.getElementById('saveChangePasswordText').style.display = 'none';
+                document.getElementById('saveChangePasswordLoading').style.display = 'block';
+                document.getElementById('saveChangePasswordBtn').disabled = true;
+
+                await makeRequest('/change-password', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: currentUser.username,
+                        currentPassword,
+                        newPassword
+                    })
+                });
+
+                showNotification('Password changed successfully', 'success');
+                closeModal('changePasswordModal');
+                e.target.reset();
+
+            } catch (error) {
+                showNotification('Failed to change password', 'error');
+            } finally {
+                document.getElementById('saveChangePasswordText').style.display = 'block';
+                document.getElementById('saveChangePasswordLoading').style.display = 'none';
+                document.getElementById('saveChangePasswordBtn').disabled = false;
+            }
+        });
+
+        // Search and Filter Functions
+        function setupSearchAndFilters() {
+            // Keys search
+            const keysSearch = document.getElementById('keysSearch');
+            if (keysSearch) {
+                keysSearch.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    filterKeys(searchTerm);
+                });
+            }
+
+            // Keys filter
+            const keysFilter = document.getElementById('keysFilter');
+            if (keysFilter) {
+                keysFilter.addEventListener('change', (e) => {
+                    const filterValue = e.target.value;
+                    filterKeysByStatus(filterValue);
+                });
+            }
+
+            // Logs search
+            const logsSearch = document.getElementById('logsSearch');
+            if (logsSearch) {
+                logsSearch.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value.toLowerCase();
+                    filterLogs(searchTerm);
+                });
+            }
+
+            // Logs filter
+            const logsFilter = document.getElementById('logsFilter');
+            if (logsFilter) {
+                logsFilter.addEventListener('change', (e) => {
+                    const filterValue = e.target.value;
+                    filterLogsByType(filterValue);
+                });
+            }
+        }
+
+        function filterKeys(searchTerm) {
+            const filteredKeys = keysData.filter(key => 
+                key.key.toLowerCase().includes(searchTerm) ||
+                (key.hwid && key.hwid.toLowerCase().includes(searchTerm))
+            );
+            
+            // Update display with filtered keys
+            updateKeysTableWithData(filteredKeys);
+        }
+
+        function filterKeysByStatus(status) {
+            let filteredKeys = keysData;
+            
+            if (status !== 'all') {
+                filteredKeys = keysData.filter(key => getKeyStatus(key) === status);
+            }
+            
+            updateKeysTableWithData(filteredKeys);
+        }
+
+        function updateKeysTableWithData(keys) {
+            const tbody = document.getElementById('keysTableBody');
+            
+            if (keys.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="empty-state">
+                            <div class="empty-state">
+                                <h3>No keys found</h3>
+                                <p>Try adjusting your search or filter criteria</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = keys.map(key => {
+                const status = getKeyStatus(key);
+                return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="key-checkbox" value="${key.id}" ${selectedKeys.has(key.id) ? 'checked' : ''}>
+                        </td>
+                        <td>
+                            <code class="key-display">${key.key}</code>
+                        </td>
+                        <td>${getStatusBadge(status)}</td>
+                        <td>${formatDate(key.expirationDate)}</td>
+                        <td>${key.maxUsage}</td>
+                        <td>
+                            <div class="usage-progress">
+                                <span>${key.usageCount}/${key.maxUsage}</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${(key.usageCount / key.maxUsage) * 100}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${key.hwid || 'Not set'}</td>
+                        <td>${formatRelativeTime(key.lastUsed)}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon" onclick="editKey('${key.id}')" title="Edit">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z"/>
+                                    </svg>
+                                </button>
+                                <button class="btn-icon btn-danger" onclick="deleteKey('${key.id}')" title="Delete">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Re-add event listeners for checkboxes
+            document.querySelectorAll('.key-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', handleKeySelection);
+            });
+        }
+
+        function filterLogs(searchTerm) {
+            const filteredLogs = logsData.filter(log => 
+                log.message.toLowerCase().includes(searchTerm) ||
+                log.location.toLowerCase().includes(searchTerm)
+            );
+            
+            updateLogsTableWithData(filteredLogs);
+        }
+
+        function filterLogsByType(type) {
+            let filteredLogs = logsData;
+            
+            if (type !== 'all') {
+                filteredLogs = logsData.filter(log => log.type === type);
+            }
+            
+            updateLogsTableWithData(filteredLogs);
+        }
+
+        function updateLogsTableWithData(logs) {
+            const tbody = document.getElementById('logsTableBody');
+            
+            if (logs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state">
+                            <div class="empty-state">
+                                <h3>No logs found</h3>
+                                <p>Try adjusting your search or filter criteria</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = logs.slice(0, 100).map(log => {
+                const logTypeClass = log.type === 'error' ? 'danger' : log.type === 'warning' ? 'warning' : 'info';
+                return `
+                    <tr>
+                        <td>${formatDate(log.timestamp)}</td>
+                        <td>
+                            <span class="badge badge-${logTypeClass}">
+                                ${log.type.toUpperCase()}
+                            </span>
+                        </td>
+                        <td>${log.message}</td>
+                        <td>${log.location}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Bulk Actions
+        function setupBulkActions() {
+            // Select all checkbox
+            const selectAllCheckbox = document.getElementById('selectAllKeys');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', (e) => {
+                    const checkboxes = document.querySelectorAll('.key-checkbox');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = e.target.checked;
+                        if (e.target.checked) {
+                            selectedKeys.add(checkbox.value);
+                        } else {
+                            selectedKeys.delete(checkbox.value);
+                        }
+                    });
+                });
+            }
+
+            // Bulk actions button
+            const bulkActionsBtn = document.getElementById('bulkActionsBtn');
+            if (bulkActionsBtn) {
+                bulkActionsBtn.addEventListener('click', () => {
+                    if (selectedKeys.size === 0) {
+                        showNotification('Please select at least one key', 'warning');
+                        return;
+                    }
+                    openModal('bulkActionsModal');
+                });
+            }
+
+            // Bulk action select
+            const bulkActionSelect = document.getElementById('bulkActionSelect');
+            if (bulkActionSelect) {
+                bulkActionSelect.addEventListener('change', (e) => {
+                    updateBulkActionOptions(e.target.value);
+                });
+            }
+
+            // Execute bulk action
+            const executeBulkActionBtn = document.getElementById('executeBulkActionBtn');
+            if (executeBulkActionBtn) {
+                executeBulkActionBtn.addEventListener('click', executeBulkAction);
+            }
+        }
+
+        function updateBulkActionOptions(action) {
+            const optionsContainer = document.getElementById('bulkActionOptions');
+            
+            switch (action) {
+                case 'extend':
+                    optionsContainer.innerHTML = `
+                        <div class="form-group">
+                            <label class="form-label">New Expiration Date</label>
+                            <input type="datetime-local" id="bulkExpirationDate" class="form-input" required>
+                        </div>
+                    `;
+                    break;
+                case 'updateUsage':
+                    optionsContainer.innerHTML = `
+                        <div class="form-group">
+                            <label class="form-label">New Max Usage</label>
+                            <input type="number" id="bulkMaxUsage" class="form-input" min="1" required>
+                        </div>
+                    `;
+                    break;
+                case 'activate':
+                case 'deactivate':
+                case 'delete':
+                    optionsContainer.innerHTML = `
+                        <div class="alert alert-warning">
+                            <strong>Warning:</strong> This action will affect ${selectedKeys.size} selected key(s).
+                        </div>
+                    `;
+                    break;
+                default:
+                    optionsContainer.innerHTML = '';
+            }
+        }
+
+        async function executeBulkAction() {
+            const action = document.getElementById('bulkActionSelect').value;
+            if (!action) {
+                showNotification('Please select an action', 'warning');
+                return;
+            }
+
+            const selectedKeyIds = Array.from(selectedKeys);
+            let actionData = {};
+
+            switch (action) {
+                case 'extend':
+                    const expirationDate = document.getElementById('bulkExpirationDate').value;
+                    if (!expirationDate) {
+                        showNotification('Please select an expiration date', 'warning');
+                        return;
+                    }
+                    actionData = { expirationDate };
+                    break;
+                case 'updateUsage':
+                    const maxUsage = document.getElementById('bulkMaxUsage').value;
+                    if (!maxUsage) {
+                        showNotification('Please enter max usage', 'warning');
+                        return;
+                    }
+                    actionData = { maxUsage: parseInt(maxUsage) };
+                    break;
+                case 'activate':
+                    actionData = { isWhitelisted: true };
+                    break;
+                case 'deactivate':
+                    actionData = { isWhitelisted: false };
+                    break;
+            }
+
+            try {
+                document.getElementById('executeBulkActionText').style.display = 'none';
+                document.getElementById('executeBulkActionLoading').style.display = 'block';
+                document.getElementById('executeBulkActionBtn').disabled = true;
+
+                await makeRequest('/keys/batch', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        operation: action === 'delete' ? 'delete' : 'update',
+                        keys: selectedKeyIds,
+                        data: actionData
+                    })
+                });
+
+                showNotification(`Bulk action completed successfully`, 'success');
+                closeModal('bulkActionsModal');
+                selectedKeys.clear();
+                await loadKeysData();
+                if (currentSection === 'dashboard') {
+                    await loadDashboardData();
+                }
+
+            } catch (error) {
+                showNotification('Bulk action failed', 'error');
+            } finally {
+                document.getElementById('executeBulkActionText').style.display = 'block';
+                document.getElementById('executeBulkActionLoading').style.display = 'none';
+                document.getElementById('executeBulkActionBtn').disabled = false;
+            }
+        }
+
+        // System Actions
+        async function clearAllKeys() {
+            showConfirmation(
+                'Clear All Keys',
+                'Are you sure you want to delete ALL keys? This action cannot be undone and will permanently remove all keys from the system.',
+                async () => {
+                    try {
+                        await makeRequest('/keys', { method: 'DELETE' });
+                        showNotification('All keys cleared successfully', 'success');
+                        await loadKeysData();
+                        if (currentSection === 'dashboard') {
+                            await loadDashboardData();
+                        }
+                    } catch (error) {
+                        showNotification('Failed to clear keys', 'error');
+                    }
+                }
+            );
+        }
+
+        async function clearAllLogs() {
+            showConfirmation(
+                'Clear All Logs',
+                'Are you sure you want to delete ALL logs? This action cannot be undone.',
+                async () => {
+                    try {
+                        await makeRequest('/logs', { method: 'DELETE' });
+                        showNotification('All logs cleared successfully', 'success');
+                        await loadLogsData();
+                    } catch (error) {
+                        showNotification('Failed to clear logs', 'error');
+                    }
+                }
+            );
+        }
+
+        async function exportData(type) {
+            try {
+                let data, filename;
+                
+                switch (type) {
+                    case 'keys':
+                        data = keysData;
+                        filename = `keys-export-${new Date().toISOString().split('T')[0]}.json`;
+                        break;
+                    case 'logs':
+                        data = logsData;
+                        filename = `logs-export-${new Date().toISOString().split('T')[0]}.json`;
+                        break;
+                    case 'users':
+                        data = usersData;
+                        filename = `users-export-${new Date().toISOString().split('T')[0]}.json`;
+                        break;
+                    case 'teams':
+                        data = teamsData;
+                        filename = `teams-export-${new Date().toISOString().split('T')[0]}.json`;
+                        break;
+                    default:
+                        showNotification('Invalid export type', 'error');
+                        return;
+                }
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} exported successfully`, 'success');
+            } catch (error) {
+                showNotification('Export failed', 'error');
+            }
+        }
+
+function setupEventListeners() {
+    // Navigation
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const section = link.dataset.section;
+            switchSection(section);
+        });
+    });
+
+    // Mobile menu
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+            sidebarOverlay.classList.toggle('show');
+        });
+    }
+
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            sidebarOverlay.classList.remove('show');
+        });
+    }
+
+    // Modal close buttons
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const modal = e.target.closest('.modal-overlay');
+            closeModal(modal.id);
+        });
+    });
+
+    // Modal overlay clicks
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeModal(overlay.id);
+            }
+        });
+    });
+
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', logout);
+    }
+
+    // Settings buttons
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', () => {
+            openModal('changePasswordModal');
+        });
+    }
+
+    const clearKeysBtn = document.getElementById('clearKeysBtn');
+    if (clearKeysBtn) {
+        clearKeysBtn.addEventListener('click', clearAllKeys);
+    }
+
+    const clearLogsBtn = document.getElementById('clearLogsBtn');
+    if (clearLogsBtn) {
+        clearLogsBtn.addEventListener('click', clearAllLogs);
+    }
+
+    // Export buttons
+    const exportKeysBtn = document.getElementById('exportKeysBtn');
+    if (exportKeysBtn) {
+        exportKeysBtn.addEventListener('click', () => exportData('keys'));
+    }
+
+    const exportLogsBtn = document.getElementById('exportLogsBtn');
+    if (exportLogsBtn) {
+        exportLogsBtn.addEventListener('click', () => exportData('logs'));
+    }
+
+    const exportUsersBtn = document.getElementById('exportUsersBtn');
+    if (exportUsersBtn) {
+        exportUsersBtn.addEventListener('click', () => exportData('users'));
+    }
+
+    const exportTeamsBtn = document.getElementById('exportTeamsBtn');
+    if (exportTeamsBtn) {
+        exportTeamsBtn.addEventListener('click', () => exportData('teams'));
+    }
+
+    // Cancel buttons in modals
+    const cancelConfirmationBtn = document.getElementById('cancelConfirmationBtn');
+    if (cancelConfirmationBtn) {
+        cancelConfirmationBtn.addEventListener('click', () => {
+            closeModal('confirmationModal');
+        });
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Escape key closes modals
+        if (e.key === 'Escape') {
+            const openModal = document.querySelector('.modal-overlay.show');
+            if (openModal) {
+                closeModal(openModal.id);
+            }
+        }
+
+        // Ctrl+N for new key (when in keys section)
+        if (e.ctrlKey && e.key === 'n' && currentSection === 'keys') {
+            e.preventDefault();
+            openCreateKeyModal();
+        }
+
+        // Ctrl+R for refresh
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            loadSectionData(currentSection);
+        }
+    });
+
+    // Auto-refresh every 5 minutes
+    setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            updateServerStatus();
+            if (currentSection === 'dashboard') {
+                loadDashboardData();
+            }
+        }
+    }, 5 * 60 * 1000);
+
+    // Setup search and filters
+    setupSearchAndFilters();
+    setupBulkActions();
+}
+
+        // Initialize Application
+        async function initializeApp() {
+            try {
+                // Check authentication
+                if (!checkAuth()) {
+                    return;
+                }
+
+                // Setup event listeners
+                setupEventListeners();
+
+                // Load initial data
+                await loadDashboardData();
+
+                // Hide loading overlay
+                hideLoading();
+
+                console.log('Dashboard initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize dashboard:', error);
+                showNotification('Failed to initialize dashboard', 'error');
+                hideLoading();
+            }
+        }
+
+        // Start the application when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                // Refresh data when page becomes visible
+                loadSectionData(currentSection);
+            }
+        });
+
+        // Handle online/offline status
+        window.addEventListener('online', () => {
+            showNotification('Connection restored', 'success');
+            loadSectionData(currentSection);
+        });
+
+        window.addEventListener('offline', () => {
+            showNotification('Connection lost. Some features may not work.', 'warning');
+        });
+
+        // Prevent accidental page refresh
+        window.addEventListener('beforeunload', (e) => {
+            if (selectedKeys.size > 0) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved selections. Are you sure you want to leave?';
+            }
+        });
+
+        // Debug mode for development
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('Debug mode enabled');
+            window.debugDashboard = {
+                currentUser,
+                authToken,
+                keysData,
+                usersData,
+                teamsData,
+                logsData,
+                selectedKeys,
+                makeRequest,
+                switchSection,
+                loadSectionData
+            };
+        }
+    </script>
 </body>
 </html>
