@@ -4,27 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Key Management System - Login</title>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
         
         :root {
-            --primary-color: #1e40af;
-            --primary-dark: #1e3a8a;
-            --secondary-color: #3b82f6;
-            --accent-color: #10b981;
-            --error-color: #ef4444;
-            --success-color: #22c55e;
-            --warning-color: #f59e0b;
-            --background-primary: #0f172a;
-            --background-secondary: #1e293b;
-            --background-tertiary: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #64748b;
-            --border-color: rgba(71, 85, 105, 0.5);
-            --glass-bg: rgba(30, 41, 59, 0.8);
-            --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            --shadow-xl: 0 35px 60px -12px rgba(0, 0, 0, 0.35);
+            --primary-black: #000000;
+            --secondary-black: #1c1c1e;
+            --tertiary-black: #2c2c2e;
+            --quaternary-black: #3a3a3c;
+            --metallic-silver: #8e8e93;
+            --metallic-light: #aeaeb2;
+            --accent-blue: #007aff;
+            --accent-blue-dark: #0056cc;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --accent-orange: #ff9500;
+            --text-primary: #ffffff;
+            --text-secondary: #f2f2f7;
+            --text-tertiary: #c7c7cc;
+            --text-quaternary: #8e8e93;
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-secondary: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(28, 28, 30, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --shadow-medium: 0 16px 64px rgba(0, 0, 0, 0.4);
+            --shadow-strong: 0 24px 80px rgba(0, 0, 0, 0.5);
+            --gradient-primary: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+            --gradient-secondary: linear-gradient(135deg, #2c2c2e 0%, #3a3a3c 100%);
+            --gradient-accent: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
         }
 
         * {
@@ -34,74 +43,195 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            font-family: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary-black);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Animated background elements */
-        .background-animation {
-            position: absolute;
+        /* Subtle background gradient */
+        body::before {
+            content: '';
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            background: radial-gradient(ellipse at center, rgba(28, 28, 30, 0.3) 0%, rgba(0, 0, 0, 0.8) 70%);
             z-index: 0;
         }
 
-        .floating-shape {
+        /* Advanced Notification System */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .notification {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow-strong);
+            transform: translateX(450px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .notification.hide {
+            transform: translateX(450px);
+            opacity: 0;
+        }
+
+        .notification::before {
+            content: '';
             position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .notification.success::before {
+            background: var(--accent-green);
+        }
+
+        .notification.error::before {
+            background: var(--accent-red);
+        }
+
+        .notification.warning::before {
+            background: var(--accent-orange);
+        }
+
+        .notification.info::before {
+            background: var(--accent-blue);
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
-            animation: float 20s infinite linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
         }
 
-        .floating-shape:nth-child(1) {
-            width: 200px;
-            height: 200px;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
+        .notification.success .notification-icon {
+            background: rgba(52, 199, 89, 0.2);
+            color: var(--accent-green);
         }
 
-        .floating-shape:nth-child(2) {
-            width: 150px;
-            height: 150px;
-            top: 60%;
-            right: 10%;
-            animation-delay: -5s;
+        .notification.error .notification-icon {
+            background: rgba(255, 59, 48, 0.2);
+            color: var(--accent-red);
         }
 
-        .floating-shape:nth-child(3) {
-            width: 100px;
-            height: 100px;
-            bottom: 20%;
-            left: 20%;
-            animation-delay: -10s;
+        .notification.warning .notification-icon {
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--accent-orange);
         }
 
-        .floating-shape:nth-child(4) {
-            width: 120px;
-            height: 120px;
-            top: 30%;
-            right: 30%;
-            animation-delay: -15s;
+        .notification.info .notification-icon {
+            background: rgba(0, 122, 255, 0.2);
+            color: var(--accent-blue);
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(120deg); }
-            66% { transform: translateY(20px) rotate(240deg); }
-            100% { transform: translateY(0px) rotate(360deg); }
+        .notification-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
-        @keyframes slideInUp {
+        .notification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .notification-message {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            line-height: 1.4;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-quaternary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .notification-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-tertiary);
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transition: width linear;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .notification.success .notification-progress {
+            background: var(--accent-green);
+        }
+
+        .notification.error .notification-progress {
+            background: var(--accent-red);
+        }
+
+        .notification.warning .notification-progress {
+            background: var(--accent-orange);
+        }
+
+        .notification.info .notification-progress {
+            background: var(--accent-blue);
+        }
+
+        /* Smooth animations */
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -112,9 +242,20 @@
             }
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.02);
+                opacity: 0.9;
+            }
         }
 
         @keyframes spin {
@@ -122,83 +263,118 @@
             100% { transform: rotate(360deg); }
         }
 
-        .login-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: var(--shadow-xl);
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s ease;
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
 
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
-            border-radius: 24px;
-            z-index: -1;
+        @keyframes slideInRight {
+            from {
+                transform: translateX(450px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .login-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .login-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-strong);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         .logo-section {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 40px;
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 20px;
-            margin: 0 auto 1.5rem;
+            width: 72px;
+            height: 72px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
+            margin: 0 auto 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--shadow-lg);
-            animation: pulse 3s infinite;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-primary);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .logo:hover::before {
+            left: 100%;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-medium);
         }
 
         .logo svg {
-            width: 40px;
-            height: 40px;
-            color: white;
+            width: 32px;
+            height: 32px;
+            color: var(--text-primary);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .logo-title {
-            font-size: 1.75rem;
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
         }
 
         .logo-subtitle {
-            font-size: 0.95rem;
-            color: var(--text-muted);
+            font-size: 16px;
+            color: var(--text-quaternary);
             font-weight: 400;
+            letter-spacing: -0.2px;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 24px;
         }
 
         .form-label {
             display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+            letter-spacing: -0.1px;
         }
 
         .input-group {
@@ -207,90 +383,207 @@
 
         .form-input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid var(--border-color);
+            padding: 16px 16px 16px 48px;
+            background: rgba(58, 58, 60, 0.3);
+            border: 1px solid var(--border-secondary);
             border-radius: 12px;
             color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            font-size: 16px;
+            font-weight: 400;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            letter-spacing: -0.2px;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-            background: rgba(30, 41, 59, 0.8);
+            border-color: var(--accent-blue);
+            background: rgba(58, 58, 60, 0.5);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+            transform: translateY(-1px);
         }
 
         .form-input::placeholder {
-            color: var(--text-muted);
+            color: var(--text-quaternary);
+            font-weight: 400;
         }
 
         .input-icon {
             position: absolute;
-            left: 1rem;
+            left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-muted);
-            transition: color 0.3s ease;
+            color: var(--text-quaternary);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 2;
         }
 
         .form-input:focus + .input-icon {
-            color: var(--accent-color);
+            color: var(--accent-blue);
+            transform: translateY(-50%) scale(1.1);
         }
 
         .password-toggle {
             position: absolute;
-            right: 1rem;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--text-muted);
+            color: var(--text-quaternary);
             cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 6px;
-            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 2;
         }
 
         .password-toggle:hover {
-            color: var(--accent-color);
-            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-blue);
+            background: rgba(0, 122, 255, 0.1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Remember Me Checkbox */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remember-me:hover {
+            transform: translateX(2px);
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            background: rgba(58, 58, 60, 0.3);
+            border: 2px solid var(--border-primary);
+            border-radius: 6px;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-input:checked + .checkbox-custom {
+            background: var(--gradient-accent);
+            border-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+
+        .checkbox-custom::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg) scale(0);
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .checkbox-input:checked + .checkbox-custom::after {
+            transform: rotate(45deg) scale(1);
+        }
+
+        .checkbox-input:focus + .checkbox-custom {
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+        }
+
+        .remember-label {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+            letter-spacing: -0.1px;
+            user-select: none;
+        }
+
+        /* Captcha Styling */
+        .captcha-group {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .cf-turnstile {
+            transform: scale(0.9);
+            transform-origin: center;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
         }
 
         .login-button {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 16px;
+            background: var(--gradient-accent);
             border: none;
             border-radius: 12px;
-            color: white;
-            font-size: 1rem;
+            color: var(--text-primary);
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
             overflow: hidden;
-            margin-bottom: 1.5rem;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: 8px;
+            letter-spacing: -0.2px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
         }
 
         .login-button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+            box-shadow: var(--shadow-medium);
+            background: linear-gradient(135deg, #0056cc 0%, #004499 100%);
+        }
+
+        .login-button:hover:not(:disabled)::before {
+            left: 100%;
         }
 
         .login-button:active {
             transform: translateY(0);
+            transition: transform 0.1s;
         }
 
         .login-button:disabled {
-            opacity: 0.7;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
@@ -300,72 +593,41 @@
             height: 20px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: var(--text-primary);
             animation: spin 1s linear infinite;
             display: none;
         }
 
-        .message {
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            display: none;
-            animation: slideInUp 0.3s ease;
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            color: #fca5a5;
-        }
-
-        .success-message {
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #86efac;
-        }
-
         .forgot-password {
             text-align: center;
+            margin-bottom: 32px;
         }
 
         .forgot-password a {
-            color: var(--accent-color);
+            color: var(--accent-blue);
             text-decoration: none;
-            font-size: 0.875rem;
+            font-size: 14px;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            letter-spacing: -0.1px;
         }
 
         .forgot-password a:hover {
-            color: #059669;
+            color: var(--accent-blue-dark);
             text-decoration: underline;
         }
 
         .footer {
             text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+            border-top: 1px solid var(--border-secondary);
         }
 
         .footer p {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-        }
-
-        /* Responsive design */
-        @media (max-width: 480px) {
-            .login-container {
-                margin: 1rem;
-                padding: 2rem;
-            }
-            
-            .logo-title {
-                font-size: 1.5rem;
-            }
+            color: var(--text-quaternary);
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: -0.1px;
         }
 
         /* Loading overlay */
@@ -375,37 +637,199 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .loading-content {
             text-align: center;
             color: var(--text-primary);
+            animation: fadeIn 0.3s ease;
         }
 
         .loading-content .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(59, 130, 246, 0.3);
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            border-top-color: var(--secondary-color);
+            border-top-color: var(--accent-blue);
             animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+            margin: 0 auto 16px;
+        }
+
+        .loading-content p {
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: -0.2px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .notification-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+
+            .notification {
+                transform: translateY(-100px);
+            }
+
+            .notification.show {
+                transform: translateY(0);
+            }
+
+            .notification.hide {
+                transform: translateY(-100px);
+            }
+
+            .login-container {
+                margin: 20px;
+                padding: 32px 24px;
+                border-radius: 16px;
+                max-width: none;
+            }
+            
+            .logo-title {
+                font-size: 24px;
+            }
+
+            .logo {
+                width: 64px;
+                height: 64px;
+            }
+
+            .logo svg {
+                width: 28px;
+                height: 28px;
+            }
+
+            .form-input {
+                padding: 14px 14px 14px 44px;
+                font-size: 16px;
+            }
+
+            .input-icon {
+                left: 14px;
+            }
+
+            .password-toggle {
+                right: 14px;
+            }
+
+            .login-button {
+                padding: 14px;
+                font-size: 16px;
+            }
+
+            .cf-turnstile {
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 320px) {
+            .login-container {
+                margin: 16px;
+                padding: 24px 20px;
+            }
+
+            .cf-turnstile {
+                transform: scale(0.7);
+            }
+        }
+
+        /* Enhanced focus states for accessibility */
+        .form-input:focus-visible,
+        .login-button:focus-visible,
+        .password-toggle:focus-visible,
+        .forgot-password a:focus-visible,
+        .remember-me:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        .login-container,
+        .logo,
+        .form-input,
+        .login-button,
+        .password-toggle,
+        .forgot-password a,
+        .checkbox-custom,
+        .remember-me {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Enhanced hover states */
+        .form-input:hover:not(:focus) {
+            border-color: var(--border-primary);
+            background: rgba(58, 58, 60, 0.4);
+        }
+
+        /* Subtle glow effect for focused elements */
+        .form-input:focus {
+            box-shadow: 
+                0 0 0 4px rgba(0, 122, 255, 0.1),
+                0 8px 32px rgba(0, 122, 255, 0.1);
+        }
+
+        .login-button:focus {
+            box-shadow: 
+                0 0 0 4px rgba(0, 122, 255, 0.2),
+                var(--shadow-medium);
+        }
+
+        /* Improved loading states */
+        .login-button.loading {
+            pointer-events: none;
+        }
+
+        .login-button.loading::before {
+            display: none;
+        }
+
+        /* Subtle metallic shine effect */
+        .logo,
+        .login-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::after,
+        .login-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.05) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+        }
+
+        .logo:hover::after,
+        .login-button:hover:not(:disabled)::after {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
         }
     </style>
 </head>
 <body>
-    <div class="background-animation">
-        <div class="floating-shape"></div>
-        <div class="floating-shape"></div>
-        <div class="floating-shape"></div>
-        <div class="floating-shape"></div>
-    </div>
+    <!-- Advanced Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
 
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
@@ -424,9 +848,6 @@
             <h1 class="logo-title">Key Management</h1>
             <p class="logo-subtitle">Secure access to your system</p>
         </div>
-
-        <div class="message error-message" id="errorMessage"></div>
-        <div class="message success-message" id="successMessage"></div>
 
         <form id="loginForm" novalidate>
             <div class="form-group">
@@ -466,13 +887,31 @@
                     </svg>
                     <button type="button" class="password-toggle" id="passwordToggle">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="eyeIcon">
-                            <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+                                                        <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
                         </svg>
                     </button>
                 </div>
             </div>
 
-            <button type="submit" class="login-button" id="loginButton">
+            <div class="remember-me" id="rememberMe">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="rememberMeCheckbox" class="checkbox-input">
+                    <div class="checkbox-custom"></div>
+                </div>
+                <label for="rememberMeCheckbox" class="remember-label">Remember me for 30 days</label>
+            </div>
+
+            <div class="captcha-group">
+                <div class="cf-turnstile" 
+                     data-sitekey="0x4AAAAAAABkMYinukE_NKJm" 
+                     data-callback="onCaptchaSuccess"
+                     data-expired-callback="onCaptchaExpired"
+                     data-error-callback="onCaptchaError"
+                     data-theme="dark">
+                </div>
+            </div>
+
+            <button type="submit" class="login-button" id="loginButton" disabled>
                 <span id="buttonText">Sign In</span>
                 <div class="loading-spinner" id="loadingSpinner"></div>
             </button>
@@ -498,35 +937,178 @@
         const loginButton = document.getElementById('loginButton');
         const buttonText = document.getElementById('buttonText');
         const loadingSpinner = document.getElementById('loadingSpinner');
-        const errorMessage = document.getElementById('errorMessage');
-        const successMessage = document.getElementById('successMessage');
         const passwordToggle = document.getElementById('passwordToggle');
         const eyeIcon = document.getElementById('eyeIcon');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const rememberMeCheckbox = document.getElementById('rememberMeCheckbox');
+        const notificationContainer = document.getElementById('notificationContainer');
+
+        // Captcha state
+        let captchaToken = null;
+        let captchaWidgetId = null;
+
+        // Advanced Notification System
+        class NotificationManager {
+            constructor() {
+                this.notifications = new Map();
+                this.notificationId = 0;
+            }
+
+            show(type, title, message, duration = 6000, persistent = false) {
+                const id = ++this.notificationId;
+                const notification = this.createNotification(id, type, title, message, duration, persistent);
+                
+                this.notifications.set(id, notification);
+                notificationContainer.appendChild(notification.element);
+                
+                // Trigger show animation
+                requestAnimationFrame(() => {
+                    notification.element.classList.add('show');
+                });
+
+                // Auto-hide if not persistent
+                if (!persistent && duration > 0) {
+                    notification.progressBar.style.width = '100%';
+                    notification.progressBar.style.transitionDuration = `${duration}ms`;
+                    
+                    setTimeout(() => {
+                        notification.progressBar.style.width = '0%';
+                    }, 100);
+
+                    notification.timeout = setTimeout(() => {
+                        this.hide(id);
+                    }, duration);
+                }
+
+                return id;
+            }
+
+            createNotification(id, type, title, message, duration, persistent) {
+                const element = document.createElement('div');
+                element.className = `notification ${type}`;
+                element.setAttribute('role', type === 'error' ? 'alert' : 'status');
+                element.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+
+                const iconSvg = this.getIconSvg(type);
+                
+                element.innerHTML = `
+                    <div class="notification-icon">
+                        ${iconSvg}
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                    <button class="notification-close" aria-label="Close notification">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                        </svg>
+                    </button>
+                    ${!persistent ? '<div class="notification-progress"></div>' : ''}
+                `;
+
+                const closeButton = element.querySelector('.notification-close');
+                const progressBar = element.querySelector('.notification-progress');
+
+                closeButton.addEventListener('click', () => {
+                    this.hide(id);
+                });
+
+                // Add click to dismiss functionality
+                element.addEventListener('click', (e) => {
+                    if (e.target === element || e.target.closest('.notification-content')) {
+                        this.hide(id);
+                    }
+                });
+
+                return {
+                    element,
+                    progressBar,
+                    timeout: null
+                };
+            }
+
+            getIconSvg(type) {
+                const icons = {
+                    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/></svg>',
+                    error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>',
+                    warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13,13H11V7H13M12,17.3A1.3,1.3 0 0,1 10.7,16A1.3,1.3 0 0,1 12,14.7A1.3,1.3 0 0,1 13.3,16A1.3,1.3 0 0,1 12,17.3M15.73,3H8.27L3,8.27V15.73L8.27,21H15.73L21,15.73V8.27L15.73,3Z"/></svg>',
+                    info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/></svg>'
+                };
+                return icons[type] || icons.info;
+            }
+
+            hide(id) {
+                const notification = this.notifications.get(id);
+                if (!notification) return;
+
+                if (notification.timeout) {
+                    clearTimeout(notification.timeout);
+                }
+
+                notification.element.classList.remove('show');
+                notification.element.classList.add('hide');
+
+                setTimeout(() => {
+                    if (notification.element.parentNode) {
+                        notification.element.parentNode.removeChild(notification.element);
+                    }
+                    this.notifications.delete(id);
+                }, 400);
+            }
+
+            hideAll() {
+                this.notifications.forEach((_, id) => {
+                    this.hide(id);
+                });
+            }
+
+            // Convenience methods
+            success(title, message, duration) {
+                return this.show('success', title, message, duration);
+            }
+
+            error(title, message, duration) {
+                return this.show('error', title, message, duration);
+            }
+
+            warning(title, message, duration) {
+                return this.show('warning', title, message, duration);
+            }
+
+            info(title, message, duration) {
+                return this.show('info', title, message, duration);
+            }
+        }
+
+        // Initialize notification manager
+        const notifications = new NotificationManager();
+
+        // Captcha callbacks
+        window.onCaptchaSuccess = function(token) {
+            captchaToken = token;
+            loginButton.disabled = false;
+            notifications.success('Security Check', 'Captcha verified successfully', 3000);
+        };
+
+        window.onCaptchaExpired = function() {
+            captchaToken = null;
+            loginButton.disabled = true;
+            notifications.warning('Security Check', 'Captcha expired. Please verify again.', 5000);
+        };
+
+        window.onCaptchaError = function() {
+            captchaToken = null;
+            loginButton.disabled = true;
+            notifications.error('Security Check', 'Captcha verification failed. Please try again.', 5000);
+        };
 
         // Utility Functions
-        function showError(message) {
-            hideMessages();
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
-            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function showSuccess(message) {
-            hideMessages();
-            successMessage.textContent = message;
-            successMessage.style.display = 'block';
-            successMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function hideMessages() {
-            errorMessage.style.display = 'none';
-            successMessage.style.display = 'none';
-        }
-
         function setLoading(isLoading) {
-            loginButton.disabled = isLoading;
+            loginButton.disabled = isLoading || !captchaToken;
+            loginButton.classList.toggle('loading', isLoading);
+            
             if (isLoading) {
                 buttonText.textContent = 'Signing In...';
                 loadingSpinner.style.display = 'block';
@@ -543,26 +1125,31 @@
             const password = passwordInput.value;
 
             if (!username) {
-                showError('Please enter your username');
+                notifications.error('Validation Error', 'Please enter your username');
                 usernameInput.focus();
                 return false;
             }
 
             if (username.length < 3) {
-                showError('Username must be at least 3 characters long');
+                notifications.error('Validation Error', 'Username must be at least 3 characters long');
                 usernameInput.focus();
                 return false;
             }
 
             if (!password) {
-                showError('Please enter your password');
+                notifications.error('Validation Error', 'Please enter your password');
                 passwordInput.focus();
                 return false;
             }
 
             if (password.length < 6) {
-                showError('Password must be at least 6 characters long');
+                notifications.error('Validation Error', 'Password must be at least 6 characters long');
                 passwordInput.focus();
+                return false;
+            }
+
+            if (!captchaToken) {
+                notifications.error('Security Check', 'Please complete the captcha verification');
                 return false;
             }
 
@@ -573,64 +1160,103 @@
             return input.trim().replace(/[<>]/g, '');
         }
 
+        // Remember me functionality
+        function saveCredentials(username, rememberMe) {
+            if (rememberMe) {
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 30);
+                
+                localStorage.setItem('rememberedUsername', username);
+                localStorage.setItem('rememberMeExpiry', expiryDate.toISOString());
+                
+                notifications.info('Remember Me', 'Your username will be remembered for 30 days', 4000);
+            } else {
+                localStorage.removeItem('rememberedUsername');
+                localStorage.removeItem('rememberMeExpiry');
+            }
+        }
+
+        function loadRememberedCredentials() {
+            const rememberedUsername = localStorage.getItem('rememberedUsername');
+            const expiryDate = localStorage.getItem('rememberMeExpiry');
+            
+            if (rememberedUsername && expiryDate) {
+                const expiry = new Date(expiryDate);
+                const now = new Date();
+                
+                if (now < expiry) {
+                    usernameInput.value = rememberedUsername;
+                    rememberMeCheckbox.checked = true;
+                    passwordInput.focus();
+                } else {
+                    localStorage.removeItem('rememberedUsername');
+                    localStorage.removeItem('rememberMeExpiry');
+                }
+            }
+        }
+
+        // Enhanced animations
+        function addInputAnimations() {
+            [usernameInput, passwordInput].forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'translateY(-1px)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'translateY(0)';
+                });
+            });
+        }
+
         // Password visibility toggle
         passwordToggle.addEventListener('click', function() {
             const isPassword = passwordInput.type === 'password';
             passwordInput.type = isPassword ? 'text' : 'password';
             
             eyeIcon.innerHTML = isPassword 
-                ? '<path d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.09L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.76,7.13 11.37,7 12,7Z"/>'
+                                ? '<path d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.09L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.76,7.13 11.37,7 12,7Z"/>'
                 : '<path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>';
         });
 
         // Input validation and formatting
         usernameInput.addEventListener('input', function() {
             this.value = sanitizeInput(this.value);
-            hideMessages();
         });
 
-        passwordInput.addEventListener('input', function() {
-            hideMessages();
-        });
-
-        // Enter key handling
+        // Enhanced keyboard navigation
         usernameInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
+                e.preventDefault();
                 passwordInput.focus();
             }
         });
 
         passwordInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                loginForm.dispatchEvent(new Event('submit'));
+                e.preventDefault();
+                if (!loginButton.disabled) {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+
+        // Remember me checkbox handling
+        rememberMeCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                notifications.info('Remember Me', 'Your username will be saved for 30 days', 3000);
             }
         });
 
         // Forgot password handler
         forgotPasswordLink.addEventListener('click', function(e) {
             e.preventDefault();
-            showError('Please contact your administrator to reset your password.');
+            notifications.warning('Password Reset', 'Please contact your administrator to reset your password.', 8000);
         });
-
-        // Auto-hide messages after 10 seconds
-        function autoHideMessage(element) {
-            if (element.style.display === 'block') {
-                setTimeout(() => {
-                    if (element.style.display === 'block') {
-                        element.style.opacity = '0';
-                        setTimeout(() => {
-                            element.style.display = 'none';
-                            element.style.opacity = '1';
-                        }, 300);
-                    }
-                }, 10000);
-            }
-        }
 
         // Main login form handler
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            hideMessages();
+            notifications.hideAll();
 
             if (!validateForm()) {
                 return;
@@ -638,22 +1264,26 @@
 
             const username = sanitizeInput(usernameInput.value);
             const password = passwordInput.value;
+            const rememberMe = rememberMeCheckbox.checked;
 
             setLoading(true);
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 25000);
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
 
                 const response = await fetch(`${API_BASE_URL}/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'CF-Turnstile-Token': captchaToken
                     },
                     body: JSON.stringify({
                         username: username,
-                        password: password
+                        password: password,
+                        captchaToken: captchaToken,
+                        rememberMe: rememberMe
                     }),
                     signal: controller.signal
                 });
@@ -672,55 +1302,87 @@
                 }
 
                 if (response.ok && data.token) {
+                    // Save authentication data
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('username', username);
                     localStorage.setItem('loginTime', new Date().toISOString());
                     
-                    showSuccess('Login successful! Redirecting to dashboard...');
-                    autoHideMessage(successMessage);
+                    // Handle remember me
+                    saveCredentials(username, rememberMe);
                     
-                    loginForm.style.transform = 'scale(0.95)';
-                    loginForm.style.opacity = '0.8';
+                    // Show success notification
+                    notifications.success(
+                        'Login Successful!', 
+                        'Welcome back! Redirecting to your dashboard...', 
+                        2000
+                    );
+                    
+                    // Enhanced success animation
+                    loginForm.style.transform = 'scale(0.98)';
+                    loginForm.style.opacity = '0.9';
                     
                     setTimeout(() => {
                         window.location.href = './dashboard.html';
-                    }, 1500);
+                    }, 2000);
                     
                 } else {
-                    let errorMsg = 'Login failed. Please try again.';
+                    // Reset captcha on failed login
+                    if (window.turnstile) {
+                        window.turnstile.reset();
+                    }
+                    captchaToken = null;
+                    loginButton.disabled = true;
+                    
+                    let errorTitle = 'Login Failed';
+                    let errorMsg = 'Please check your credentials and try again.';
                     
                     if (data.error) {
                         errorMsg = data.error;
                     } else if (response.status === 401) {
-                        errorMsg = 'Invalid username or password. Please check your credentials and try again.';
+                        errorMsg = 'Invalid username or password. Please verify your credentials.';
                     } else if (response.status === 429) {
+                        errorTitle = 'Too Many Attempts';
                         errorMsg = 'Too many login attempts. Please wait a few minutes before trying again.';
+                    } else if (response.status === 403) {
+                        errorTitle = 'Access Denied';
+                        errorMsg = 'Your account may be locked or suspended. Contact support for assistance.';
                     } else if (response.status === 503) {
-                        errorMsg = 'Service temporarily unavailable. Please try again later.';
+                        errorTitle = 'Service Unavailable';
+                        errorMsg = 'The service is temporarily unavailable. Please try again later.';
                     } else if (response.status >= 500) {
-                        errorMsg = 'Server error. Please try again later or contact support.';
+                        errorTitle = 'Server Error';
+                        errorMsg = 'A server error occurred. Please try again later or contact support.';
                     }
                     
-                    showError(errorMsg);
-                    autoHideMessage(errorMessage);
+                    notifications.error(errorTitle, errorMsg, 8000);
                     passwordInput.value = '';
                     passwordInput.focus();
                 }
             } catch (error) {
                 console.error('Login error:', error);
                 
-                let errorMsg = 'Network error. Please check your connection and try again.';
+                // Reset captcha on error
+                if (window.turnstile) {
+                    window.turnstile.reset();
+                }
+                captchaToken = null;
+                loginButton.disabled = true;
+                
+                let errorTitle = 'Connection Error';
+                let errorMsg = 'Please check your internet connection and try again.';
                 
                 if (error.name === 'AbortError') {
-                    errorMsg = 'Request timed out. Please try again.';
+                    errorTitle = 'Request Timeout';
+                    errorMsg = 'The request took too long to complete. Please try again.';
                 } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorTitle = 'Network Error';
                     errorMsg = 'Unable to connect to the server. Please check your internet connection.';
                 } else if (error.name === 'SyntaxError') {
-                    errorMsg = 'Server returned an invalid response. Please try again.';
+                    errorTitle = 'Server Error';
+                    errorMsg = 'The server returned an invalid response. Please try again.';
                 }
                 
-                showError(errorMsg);
-                autoHideMessage(errorMessage);
+                notifications.error(errorTitle, errorMsg, 10000);
                 passwordInput.value = '';
                 passwordInput.focus();
             } finally {
@@ -739,10 +1401,15 @@
                 const hoursSinceLogin = (now - loginDate) / (1000 * 60 * 60);
                 
                 if (hoursSinceLogin < 1) {
-                    showSuccess('You are already logged in. Redirecting...');
+                    notifications.success(
+                        'Already Logged In', 
+                        'You are already authenticated. Redirecting to dashboard...', 
+                        2000
+                    );
                     setTimeout(() => {
                         window.location.href = './dashboard.html';
-                    }, 1000);
+                    }, 2000);
+                    return;
                 } else {
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('username');
@@ -750,75 +1417,128 @@
                 }
             }
             
-            usernameInput.focus();
+            // Load remembered credentials
+            loadRememberedCredentials();
+            
+            // Focus appropriate input
+            setTimeout(() => {
+                if (usernameInput.value) {
+                    passwordInput.focus();
+                } else {
+                    usernameInput.focus();
+                }
+            }, 500);
+
+            // Show welcome notification
+            setTimeout(() => {
+                notifications.info(
+                    'Welcome to Key Management System', 
+                    'Please enter your credentials to access your secure dashboard.', 
+                    5000
+                );
+            }, 1000);
         });
 
-        // Form validation styling
+        // Enhanced form validation styling
         function addValidationStyling() {
             const inputs = [usernameInput, passwordInput];
             
             inputs.forEach(input => {
                 input.addEventListener('blur', function() {
                     if (this.value.trim()) {
-                        this.style.borderColor = 'var(--accent-color)';
-                        this.style.backgroundColor = 'rgba(16, 185, 129, 0.05)';
+                        this.style.borderColor = 'var(--accent-blue)';
+                        this.style.backgroundColor = 'rgba(0, 122, 255, 0.05)';
                     } else {
-                                                this.style.borderColor = 'var(--border-color)';
-                        this.style.backgroundColor = 'rgba(30, 41, 59, 0.6)';
+                        this.style.borderColor = 'var(--border-secondary)';
+                        this.style.backgroundColor = 'rgba(58, 58, 60, 0.3)';
                     }
                 });
 
                 input.addEventListener('focus', function() {
-                    this.style.borderColor = 'var(--accent-color)';
-                    this.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
+                    this.style.borderColor = 'var(--accent-blue)';
+                    this.style.backgroundColor = 'rgba(58, 58, 60, 0.5)';
+                });
+
+                input.addEventListener('input', function() {
+                    // Real-time validation feedback
+                    if (this === usernameInput) {
+                        if (this.value.length >= 3) {
+                            this.style.borderColor = 'var(--accent-green)';
+                        } else if (this.value.length > 0) {
+                            this.style.borderColor = 'var(--accent-orange)';
+                        }
+                    } else if (this === passwordInput) {
+                        if (this.value.length >= 6) {
+                            this.style.borderColor = 'var(--accent-green)';
+                        } else if (this.value.length > 0) {
+                            this.style.borderColor = 'var(--accent-orange)';
+                        }
+                    }
                 });
             });
         }
 
-        // Initialize validation styling
-        addValidationStyling();
-
         // Handle connection issues
         window.addEventListener('online', function() {
-            hideMessages();
-            showSuccess('Connection restored. You can now try logging in.');
-            autoHideMessage(successMessage);
+            notifications.success(
+                'Connection Restored', 
+                'Your internet connection has been restored. You can now try logging in.', 
+                4000
+            );
         });
 
         window.addEventListener('offline', function() {
-            hideMessages();
-            showError('No internet connection. Please check your network and try again.');
+            notifications.error(
+                'Connection Lost', 
+                'No internet connection detected. Please check your network and try again.', 
+                0, 
+                true
+            );
         });
 
         // Security: Clear sensitive data on page unload
         window.addEventListener('beforeunload', function() {
             passwordInput.value = '';
             
-            if (!localStorage.getItem('authToken')) {
+            if (!rememberMeCheckbox.checked) {
                 usernameInput.value = '';
             }
         });
 
         // Handle browser back/forward buttons
         window.addEventListener('popstate', function() {
-            hideMessages();
+            notifications.hideAll();
         });
 
         // Handle visibility change (tab switching)
         document.addEventListener('visibilitychange', function() {
             if (document.visibilityState === 'visible') {
-                hideMessages();
+                // Check if captcha needs refresh
+                if (!captchaToken && window.turnstile) {
+                    notifications.info(
+                        'Security Check', 
+                        'Please complete the captcha verification to continue.', 
+                        4000
+                    );
+                }
             }
         });
 
-        // Add keyboard shortcuts
+        // Enhanced keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                hideMessages();
+                notifications.hideAll();
             }
             
             if ((e.ctrlKey && e.key === 'r') || e.key === 'F5') {
-                hideMessages();
+                notifications.hideAll();
+            }
+
+            // Alt + R to toggle remember me
+            if (e.altKey && e.key === 'r') {
+                e.preventDefault();
+                rememberMeCheckbox.checked = !rememberMeCheckbox.checked;
+                rememberMeCheckbox.dispatchEvent(new Event('change'));
             }
         });
 
@@ -826,18 +1546,9 @@
         usernameInput.addEventListener('paste', function(e) {
             setTimeout(() => {
                 this.value = sanitizeInput(this.value);
+                this.dispatchEvent(new Event('input'));
             }, 0);
         });
-
-        // Add smooth transitions for better UX
-        function addSmoothTransitions() {
-            const elements = document.querySelectorAll('.form-input, .login-button, .message');
-            elements.forEach(element => {
-                element.style.transition = 'all 0.3s ease';
-            });
-        }
-
-        addSmoothTransitions();
 
         // Performance optimization: Preload dashboard
         function preloadDashboard() {
@@ -847,18 +1558,15 @@
             document.head.appendChild(link);
         }
 
-        // Preload dashboard after a short delay
-        setTimeout(preloadDashboard, 2000);
-
-        // Add accessibility improvements
+        // Enhanced accessibility improvements
         function improveAccessibility() {
+            // Add ARIA labels
             usernameInput.setAttribute('aria-label', 'Username');
             passwordInput.setAttribute('aria-label', 'Password');
             loginButton.setAttribute('aria-label', 'Sign in to your account');
+            rememberMeCheckbox.setAttribute('aria-label', 'Remember me for 30 days');
             
-            errorMessage.setAttribute('role', 'alert');
-            successMessage.setAttribute('role', 'status');
-            
+            // Add live region for screen readers
             const liveRegion = document.createElement('div');
             liveRegion.setAttribute('aria-live', 'polite');
             liveRegion.setAttribute('aria-atomic', 'true');
@@ -868,40 +1576,307 @@
             liveRegion.style.height = '1px';
             liveRegion.style.overflow = 'hidden';
             document.body.appendChild(liveRegion);
-            
-            // Store original functions
-            const originalShowError = showError;
-            const originalShowSuccess = showSuccess;
-            
-            // Override functions to update live region
-            showError = function(message) {
-                originalShowError(message);
-                liveRegion.textContent = `Error: ${message}`;
-                autoHideMessage(errorMessage);
-            };
-            
-            showSuccess = function(message) {
-                originalShowSuccess(message);
-                liveRegion.textContent = `Success: ${message}`;
-                autoHideMessage(successMessage);
+
+            // Announce important state changes
+            const originalSetLoading = setLoading;
+            setLoading = function(isLoading) {
+                originalSetLoading(isLoading);
+                liveRegion.textContent = isLoading ? 'Signing in, please wait...' : 'Sign in form ready';
             };
         }
 
-        improveAccessibility();
+        // Initialize all enhancements
+        function initializeApp() {
+            addValidationStyling();
+            addInputAnimations();
+            improveAccessibility();
+            
+            // Preload dashboard after a short delay
+            setTimeout(preloadDashboard, 3000);
+            
+            // Initialize captcha state
+            loginButton.disabled = true;
+            
+            console.log('Key Management System login page initialized successfully');
+        }
+
+        // Advanced form state management
+        class FormStateManager {
+            constructor() {
+                this.state = {
+                    username: '',
+                    password: '',
+                    rememberMe: false,
+                    captchaVerified: false,
+                    isValid: false
+                };
+                this.listeners = [];
+            }
+
+            setState(newState) {
+                this.state = { ...this.state, ...newState };
+                this.notifyListeners();
+            }
+
+            addListener(callback) {
+                this.listeners.push(callback);
+            }
+
+            notifyListeners() {
+                this.listeners.forEach(callback => callback(this.state));
+            }
+
+            validateState() {
+                const { username, password, captchaVerified } = this.state;
+                const isValid = username.length >= 3 && 
+                               password.length >= 6 && 
+                               captchaVerified;
+                
+                this.setState({ isValid });
+                return isValid;
+            }
+        }
+
+        // Initialize form state manager
+        const formState = new FormStateManager();
+
+        // Listen to form state changes
+        formState.addListener((state) => {
+            loginButton.disabled = !state.isValid;
+            
+            // Update button appearance based on state
+            if (state.isValid) {
+                loginButton.style.opacity = '1';
+                loginButton.style.transform = 'scale(1)';
+            } else {
+                loginButton.style.opacity = '0.6';
+                loginButton.style.transform = 'scale(0.98)';
+            }
+        });
+
+        // Update form state on input changes
+        usernameInput.addEventListener('input', function() {
+            formState.setState({ username: this.value.trim() });
+            formState.validateState();
+        });
+
+        passwordInput.addEventListener('input', function() {
+            formState.setState({ password: this.value });
+            formState.validateState();
+        });
+
+        rememberMeCheckbox.addEventListener('change', function() {
+            formState.setState({ rememberMe: this.checked });
+        });
+
+        // Update captcha state
+        const originalOnCaptchaSuccess = window.onCaptchaSuccess;
+        window.onCaptchaSuccess = function(token) {
+            originalOnCaptchaSuccess(token);
+            formState.setState({ captchaVerified: true });
+            formState.validateState();
+        };
+
+        const originalOnCaptchaExpired = window.onCaptchaExpired;
+        window.onCaptchaExpired = function() {
+            originalOnCaptchaExpired();
+            formState.setState({ captchaVerified: false });
+            formState.validateState();
+        };
+
+        const originalOnCaptchaError = window.onCaptchaError;
+        window.onCaptchaError = function() {
+            originalOnCaptchaError();
+            formState.setState({ captchaVerified: false });
+            formState.validateState();
+        };
+
+        // Enhanced error handling with retry mechanism
+        class RetryManager {
+            constructor() {
+                this.retryCount = 0;
+                this.maxRetries = 3;
+                this.retryDelay = 2000;
+            }
+
+            async executeWithRetry(operation, context = 'operation') {
+                for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+                    try {
+                        const result = await operation();
+                        this.retryCount = 0; // Reset on success
+                        return result;
+                    } catch (error) {
+                        if (attempt === this.maxRetries) {
+                            notifications.error(
+                                'Operation Failed',
+                                `${context} failed after ${this.maxRetries + 1} attempts. Please try again later.`,
+                                10000
+                            );
+                            throw error;
+                        }
+
+                        const delay = this.retryDelay * Math.pow(2, attempt); // Exponential backoff
+                        notifications.warning(
+                            'Retrying...',
+                            `${context} failed. Retrying in ${delay / 1000} seconds... (Attempt ${attempt + 2}/${this.maxRetries + 1})`,
+                            delay - 500
+                        );
+
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+
+            reset() {
+                this.retryCount = 0;
+            }
+        }
+
+        const retryManager = new RetryManager();
+
+        // Enhanced security features
+        function addSecurityFeatures() {
+            // Detect and warn about password managers
+            passwordInput.addEventListener('input', function() {
+                if (this.value.length > 50) {
+                    notifications.info(
+                        'Password Manager Detected',
+                        'Using a password manager is recommended for security.',
+                        4000
+                    );
+                }
+            });
+
+            // Warn about caps lock
+            document.addEventListener('keydown', function(e) {
+                if (e.getModifierState && e.getModifierState('CapsLock')) {
+                    if (document.activeElement === passwordInput) {
+                        notifications.warning(
+                            'Caps Lock Warning',
+                            'Caps Lock is on. This may affect your password entry.',
+                            3000
+                        );
+                    }
+                }
+            });
+
+            // Session timeout warning
+            let sessionWarningShown = false;
+            setInterval(() => {
+                const loginTime = localStorage.getItem('loginTime');
+                if (loginTime && !sessionWarningShown) {
+                    const loginDate = new Date(loginTime);
+                    const now = new Date();
+                    const minutesSinceLogin = (now - loginDate) / (1000 * 60);
+                    
+                    if (minutesSinceLogin > 45) { // 45 minutes
+                        sessionWarningShown = true;
+                        notifications.warning(
+                            'Session Expiring Soon',
+                            'Your session will expire in 15 minutes. Please save your work.',
+                            10000
+                        );
+                    }
+                }
+            }, 60000); // Check every minute
+        }
+
+        // Performance monitoring
+        function addPerformanceMonitoring() {
+            const performanceObserver = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                entries.forEach((entry) => {
+                    if (entry.entryType === 'navigation') {
+                        console.log(`Page load time: ${entry.loadEventEnd - entry.loadEventStart}ms`);
+                    }
+                });
+            });
+
+            if ('PerformanceObserver' in window) {
+                performanceObserver.observe({ entryTypes: ['navigation'] });
+            }
+
+            // Monitor form submission performance
+            const originalFormSubmit = loginForm.addEventListener;
+            let submitStartTime;
+
+            loginForm.addEventListener('submit', function() {
+                submitStartTime = performance.now();
+            });
+
+            // Monitor when loading ends
+            const originalSetLoadingEnd = setLoading;
+            setLoading = function(isLoading) {
+                if (!isLoading && submitStartTime) {
+                    const submitTime = performance.now() - submitStartTime;
+                    console.log(`Login attempt took: ${submitTime.toFixed(2)}ms`);
+                    submitStartTime = null;
+                }
+                originalSetLoadingEnd(isLoading);
+            };
+        }
+
+        // Initialize all features
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            addSecurityFeatures();
+            addPerformanceMonitoring();
+        });
 
         // Debug mode for development
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             console.log('Debug mode enabled');
             window.debugLogin = {
-                showError,
-                showSuccess,
+                notifications,
+                formState,
+                retryManager,
                 setLoading,
                 validateForm,
-                API_BASE_URL
+                API_BASE_URL,
+                captchaToken: () => captchaToken
             };
+
+            // Add debug notifications
+            setTimeout(() => {
+                notifications.info(
+                    'Debug Mode',
+                    'Development mode is active. Additional debugging features are available.',
+                    5000
+                );
+            }, 2000);
         }
 
-        console.log('Login page initialized successfully');
+        // Service worker registration for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(function(err) {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // Add smooth page transitions
+        function addPageTransitions() {
+            // Fade in animation on load
+            document.body.style.opacity = '0';
+            window.addEventListener('load', function() {
+                document.body.style.transition = 'opacity 0.5s ease';
+                document.body.style.opacity = '1';
+            });
+
+            // Smooth exit animation
+            window.addEventListener('beforeunload', function() {
+                document.body.style.opacity = '0';
+            });
+        }
+
+        addPageTransitions();
+
+        console.log('Advanced Key Management System login page fully initialized');
     </script>
 </body>
 </html>
